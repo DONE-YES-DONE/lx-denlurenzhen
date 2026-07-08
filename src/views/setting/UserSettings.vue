@@ -25,7 +25,7 @@
         <!-- 左：用户信息 -->
         <div class="settings-card">
           <h3 class="card-title"><i class="fas fa-id-card"></i> 基本信息</h3>
-          <el-descriptions :column="2" border size="small">
+          <el-descriptions :column="1" border>
             <el-descriptions-item label="用户ID">{{ authStore.userDate?.id || '—' }}</el-descriptions-item>
             <el-descriptions-item label="用户名">{{ authStore.userDate?.userName || '—' }}</el-descriptions-item>
             <el-descriptions-item label="邮箱">{{ authStore.userDate?.email || '—' }}</el-descriptions-item>
