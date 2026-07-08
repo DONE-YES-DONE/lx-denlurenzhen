@@ -5,23 +5,27 @@
       <p>管理账户信息、密码及用户权限</p>
     </div>
 
-    <el-tabs v-model="activeTab" class="settings-tabs">
-      <!-- ========== 用户信息 ========== -->
-      <el-tab-pane label="用户信息" name="info">
-        <div class="form-card">
-          <!-- 头像 + 名称 醒目区域 -->
-          <div class="profile-header">
-            <div class="profile-avatar">
-              <img v-if="authStore.userDate?.avatarUrl && !avatarLoadError" :src="authStore.userDate.avatarUrl" class="profile-avatar-img" @error="avatarLoadError = true" />
-              <span v-else class="profile-avatar-letter">{{ (authStore.userDate?.userName || 'U').charAt(0).toUpperCase() }}</span>
-            </div>
-            <div class="profile-names">
-              <span class="profile-username">{{ authStore.userDate?.userName || '—' }}</span>
-              <el-tag :type="isRoot ? 'danger' : ''" size="small">{{ isRoot ? '管理员' : '普通用户' }}</el-tag>
-            </div>
-          </div>
-          <el-divider />
-          <el-descriptions :column="2" border size="small" style="max-width: 600px">
+    <div class="settings-body">
+      <!-- 头像 + 名称 -->
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img v-if="authStore.userDate?.avatarUrl && !avatarLoadError" :src="authStore.userDate.avatarUrl" class="profile-avatar-img" @error="avatarLoadError = true" />
+          <span v-else class="profile-avatar-letter">{{ (authStore.userDate?.userName || 'U').charAt(0).toUpperCase() }}</span>
+        </div>
+        <div class="profile-names">
+          <span class="profile-username">{{ authStore.userDate?.userName || '—' }}</span>
+          <el-tag :type="isRoot ? 'danger' : ''" size="small">{{ isRoot ? '管理员' : '普通用户' }}</el-tag>
+        </div>
+      </div>
+
+      <el-divider />
+
+      <!-- 双列布局 -->
+      <div class="settings-grid">
+        <!-- 左：用户信息 -->
+        <div class="settings-card">
+          <h3 class="card-title"><i class="fas fa-id-card"></i> 基本信息</h3>
+          <el-descriptions :column="2" border size="small">
             <el-descriptions-item label="用户ID">{{ authStore.userDate?.id || '—' }}</el-descriptions-item>
             <el-descriptions-item label="用户名">{{ authStore.userDate?.userName || '—' }}</el-descriptions-item>
             <el-descriptions-item label="邮箱">{{ authStore.userDate?.email || '—' }}</el-descriptions-item>
@@ -30,16 +34,23 @@
             </el-descriptions-item>
           </el-descriptions>
         </div>
-      </el-tab-pane>
 
-      <!-- ========== 修改密码 ========== -->
-      <el-tab-pane label="修改密码" name="password">
-        <div class="form-card">
-          <el-form
-            ref="pwdFormRef"
-            :model="pwdForm" :rules="pwdRules"
-            label-width="100px" style="max-width: 450px"
-          >
+        <!-- 右：修改操作 -->
+        <div class="settings-card">
+          <h3 class="card-title"><i class="fas fa-user-edit"></i> 修改用户名</h3>
+          <el-form ref="nameFormRef" :model="nameForm" :rules="nameRules" label-width="80px">
+            <el-form-item label="新用户名" prop="userName">
+              <el-input v-model="nameForm.userName" placeholder="请输入新用户名" maxlength="20" show-word-limit />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :loading="nameLoading" @click="handleChangeName">保存</el-button>
+            </el-form-item>
+          </el-form>
+
+          <el-divider />
+
+          <h3 class="card-title"><i class="fas fa-lock"></i> 修改密码</h3>
+          <el-form ref="pwdFormRef" :model="pwdForm" :rules="pwdRules" label-width="80px">
             <el-form-item label="原密码" prop="oldPassword">
               <el-input v-model="pwdForm.oldPassword" type="password" show-password placeholder="请输入原密码" />
             </el-form-item>
@@ -55,30 +66,8 @@
             </el-form-item>
           </el-form>
         </div>
-      </el-tab-pane>
-
-      <!-- ========== 修改用户名 ========== -->
-      <el-tab-pane label="修改用户名" name="username">
-        <div class="form-card">
-          <el-form
-            ref="nameFormRef"
-            :model="nameForm" :rules="nameRules"
-            label-width="100px" style="max-width: 450px"
-          >
-            <el-form-item label="当前用户名">
-              <span class="info-text">{{ authStore.userDate?.userName || '—' }}</span>
-            </el-form-item>
-            <el-form-item label="新用户名" prop="userName">
-              <el-input v-model="nameForm.userName" placeholder="请输入新用户名" maxlength="20" show-word-limit />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" :loading="nameLoading" @click="handleChangeName">保存修改</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-      </el-tab-pane>
-
-    </el-tabs>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,7 +79,6 @@ import { requestUser } from '@/api/requst'
 
 // ==================== 基础 ====================
 const authStore = useAuthStore()
-const activeTab = ref('info')
 const avatarLoadError = ref(false)
 const isRoot = computed(() => {
   const u = authStore.userDate
@@ -184,34 +172,26 @@ const handleChangeName = async () => {
 </script>
 
 <style scoped>
-.settings-container {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: calc(100vh - 64px);
-}
+.settings-container { padding: 24px; background: #f5f7fa; min-height: calc(100vh - 64px); }
 .settings-header { margin-bottom: 24px; }
 .settings-header h2 { font-size: 24px; font-weight: 700; color: #1f2937; margin: 0 0 8px 0; }
 .settings-header p { font-size: 14px; color: #6b7280; margin: 0; }
 
-.settings-tabs {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-.form-card { padding: 20px 0; }
+.settings-body { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
 
-.info-text { font-size: 14px; color: #6b7280; }
-
-/* 个人信息头部 */
-.profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 4px; }
-.profile-avatar { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+/* 头像 */
+.profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.profile-avatar { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
 .profile-avatar-img { width: 100%; height: 100%; object-fit: cover; }
-.profile-avatar-letter {
-  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 28px; font-weight: 700;
-}
-.profile-names { display: flex; flex-direction: column; gap: 6px; }
-.profile-username { font-size: 20px; font-weight: 700; color: #1f2937; }
+.profile-avatar-letter { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 24px; font-weight: 700; }
+.profile-names { display: flex; flex-direction: column; gap: 4px; }
+.profile-username { font-size: 18px; font-weight: 700; color: #1f2937; }
 
+/* 双列 */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.settings-card { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; }
+.card-title { font-size: 15px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; }
+.card-title i { color: #6366f1; font-size: 14px; width: 20px; text-align: center; }
+
+@media (max-width: 768px) { .settings-grid { grid-template-columns: 1fr; } }
 </style>
