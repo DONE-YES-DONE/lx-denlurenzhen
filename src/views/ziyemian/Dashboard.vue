@@ -210,6 +210,7 @@ import { ElMessage } from 'element-plus'
 import * as echarts from 'echarts'
 import dashboardApi from '@/api/dashboard'
 import wireMaterialApi from '@/api/wire-material'
+import scenarioApi from '@/api/scenario'
 
 const router = useRouter()
 
@@ -449,11 +450,12 @@ const switchBatchChartType = (type) => {
 }
 
 const paramCharts = [
-  { label: '直径', unit: 'mm', key: 'diameter', min: 0.80, max: 0.95 },
-  { label: '电导率', unit: 'MS/m', key: 'resistance', min: 55, max: 65 },
-  { label: '延展率', unit: '%', key: 'extensibility', min: 8.0, max: 14.0 },
-  { label: '重量', unit: 'g', key: 'weight', min: 2.5, max: 4.5 }
+  { label: '直径', unit: 'mm', key: 'diameter' },
+  { label: '电导率', unit: 'MS/m', key: 'resistance' },
+  { label: '延展率', unit: '%', key: 'extensibility' },
+  { label: '重量', unit: 'g', key: 'weight' }
 ]
+const stdRange = ref(null) // 动态获取的场景标准范围
 
 const loadBatchPhysical = async () => {
   try {
@@ -465,9 +467,25 @@ const loadBatchPhysical = async () => {
       diameter: r.diameter,
       resistance: r.resistance,
       extensibility: r.extensibility,
-      weight: r.weight
+      weight: r.weight,
+      scenarioCode: r.scenarioCode
     }))
     latestBatchNo.value = list[0]?.batchNo ?? '—'
+
+    // 根据场景编号查询真实标准范围
+    const scenarioCode = list[0]?.scenarioCode
+    if (scenarioCode) {
+      try {
+        const sr = await scenarioApi.selectScenarioByCode(scenarioCode)
+        const s = sr.data ?? sr
+        stdRange.value = {
+          diameter: { min: s.diameterMin, max: s.diameterMax },
+          resistance: { min: s.conductivityMin, max: s.conductivityMax },
+          extensibility: { min: s.extensibilityMin, max: s.extensibilityMax },
+          weight: { min: s.weightMin, max: s.weightMax }
+        }
+      } catch { stdRange.value = null }
+    }
   } catch (e) {
     console.error('最新批次数据加载失败', e)
     batchRolls.value = []
@@ -486,7 +504,8 @@ function renderBatchCharts() {
     const values = batchRolls.value.map(r => r[p.key])
     const xData = batchRolls.value.map(r => '卷' + r.rollNo)
     const isLine = batchChartType.value === 'line'
-    const range = { min: p.min, max: p.max }
+    const sceneRange = stdRange.value?.[p.key]
+    const range = sceneRange || { min: p.min ?? 0.80, max: p.max ?? 0.95 }
 
     const buildDataZoom = (vals) => [
       { type: 'slider', start: 0, end: Math.min(100, Math.ceil(100 * 10 / vals.length)), bottom: 6, height: 18, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } },
