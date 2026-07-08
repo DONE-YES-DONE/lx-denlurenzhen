@@ -114,6 +114,14 @@
       <div class="chart-header">
         <h3 class="chart-title"><i class="fas fa-cubes"></i>最新批次物理参数分布 <span class="batch-no-tag">#{{ latestBatchNo }}</span></h3>
         <span class="batch-roll-count">{{ batchRolls.length }} 卷</span>
+        <div class="chart-type-toggle">
+          <button :class="['type-btn', { active: batchChartType === 'line' }]" @click="switchBatchChartType('line')">
+            <i class="fas fa-chart-line"></i> 折线
+          </button>
+          <button :class="['type-btn', { active: batchChartType === 'bar' }]" @click="switchBatchChartType('bar')">
+            <i class="fas fa-chart-bar"></i> 柱状
+          </button>
+        </div>
       </div>
       <div class="batch-charts-2x2">
         <div class="mini-chart-card" v-for="(item, i) in paramCharts" :key="i">
@@ -429,6 +437,12 @@ const batchChartRefs = ref([])
 let batchChartInstances = []
 const latestBatchNo = ref(null)
 const batchRolls = ref([])
+const batchChartType = ref('line')
+
+const switchBatchChartType = (type) => {
+  batchChartType.value = type
+  nextTick(() => renderBatchCharts())
+}
 
 const paramCharts = [
   { label: '直径', unit: 'mm', key: 'diameter', min: 0.80, max: 0.95 },
@@ -467,8 +481,18 @@ function renderBatchCharts() {
     batchChartInstances.push(instance)
     const values = batchRolls.value.map(r => r[p.key])
     const xData = batchRolls.value.map(r => '卷' + r.rollNo)
-    const colors = values.map(v => (v < p.min || v > p.max) ? '#ef4444' : '#6366f1')
-    instance.setOption({
+    const isLine = batchChartType.value === 'line'
+    const markLine = {
+      silent: true,
+      symbol: 'none',
+      lineStyle: { type: 'dashed', color: '#22c55e', width: 1 },
+      label: { fontSize: 9, color: '#22c55e', formatter: '{c}' },
+      data: [
+        { yAxis: p.min, name: '下限' },
+        { yAxis: p.max, name: '上限' }
+      ]
+    }
+    const option = {
       tooltip: { trigger: 'axis', formatter: params => `${params[0].axisValue}<br/>${p.label}: <b>${params[0].value} ${p.unit}</b>` },
       grid: { left: '6%', right: '6%', top: '10%', bottom: '10%' },
       xAxis: {
@@ -484,29 +508,51 @@ function renderBatchCharts() {
         splitLine: { lineStyle: { color: '#f3f4f6' } },
         min: p.min * 0.9,
         max: p.max * 1.1
-      },
-      series: [{
+      }
+    }
+    if (isLine) {
+      option.visualMap = {
+        type: 'piecewise',
+        show: false,
+        dimension: 1,
+        pieces: [
+          { gte: p.min, lte: p.max, color: '#22c55e' },
+          { lt: p.min, color: '#ef4444' },
+          { gt: p.max, color: '#ef4444' }
+        ]
+      }
+      option.series = [{
+        type: 'line',
+        smooth: true,
+        lineStyle: { width: 2 },
+        data: values.map(v => {
+          const qualified = v >= p.min && v <= p.max
+          return {
+            value: v,
+            symbol: 'circle',
+            symbolSize: qualified ? 6 : 10,
+            itemStyle: {
+              color: qualified ? '#22c55e' : '#ef4444',
+              borderColor: '#fff',
+              borderWidth: 2
+            }
+          }
+        }),
+        markLine
+      }]
+    } else {
+      const colors = values.map(v => (v < p.min || v > p.max) ? '#ef4444' : '#22c55e')
+      option.series = [{
         type: 'bar',
         barWidth: '50%',
         data: values.map((v, j) => ({
           value: v,
-          itemStyle: {
-            color: colors[j],
-            borderRadius: [4, 4, 0, 0]
-          }
+          itemStyle: { color: colors[j], borderRadius: [4, 4, 0, 0] }
         })),
-        markLine: {
-          silent: true,
-          symbol: 'none',
-          lineStyle: { type: 'dashed', color: '#22c55e', width: 1 },
-          label: { fontSize: 9, color: '#22c55e', formatter: '{c}' },
-          data: [
-            { yAxis: p.min, name: '下限' },
-            { yAxis: p.max, name: '上限' }
-          ]
-        }
+        markLine
       }]
-    }, true)
+    }
+    instance.setOption(option, true)
   })
 }
 
@@ -658,7 +704,11 @@ onBeforeUnmount(() => {
 /* ===== 最新批次物理参数 ===== */
 .batch-params-card { margin-bottom: 24px; }
 .batch-no-tag { font-size: 13px; font-weight: 600; color: #6366f1; background: #eef2ff; padding: 2px 10px; border-radius: 10px; margin-left: 8px; }
-.batch-roll-count { font-size: 13px; color: #9ca3af; }
+.batch-roll-count { font-size: 13px; color: #9ca3af; margin-right: 12px; }
+.chart-type-toggle { display: flex; gap: 2px; background: #f1f5f9; border-radius: 6px; padding: 2px; }
+.type-btn { height: 26px; padding: 0 10px; border: none; background: transparent; border-radius: 4px; cursor: pointer; color: #94a3b8; font-size: 12px; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+.type-btn:hover { color: #6366f1; }
+.type-btn.active { background: white; color: #6366f1; box-shadow: 0 1px 3px rgba(0,0,0,0.08); font-weight: 600; }
 .batch-charts-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .mini-chart-card { background: #f8fafc; border-radius: 10px; padding: 12px 14px; border: 1px solid #e5e7eb; }
 .mini-chart-title { font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 4px; }
