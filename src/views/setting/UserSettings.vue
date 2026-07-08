@@ -22,7 +22,7 @@
 
       <!-- 双列布局 -->
       <div class="settings-grid">
-        <!-- 左：用户信息 -->
+        <!-- 左：基本信息 + 修改用户名 -->
         <div class="settings-card">
           <h3 class="card-title"><i class="fas fa-id-card"></i> 基本信息</h3>
           <el-descriptions :column="1" border style="margin-top: 40px;">
@@ -33,10 +33,7 @@
               <el-tag :type="isRoot ? 'danger' : 'info'" size="small">{{ isRoot ? '管理员' : '普通用户' }}</el-tag>
             </el-descriptions-item>
           </el-descriptions>
-        </div>
-
-        <!-- 右：修改操作 -->
-        <div class="settings-card">
+          <el-divider />
           <h3 class="card-title"><i class="fas fa-user-edit"></i> 修改用户名</h3>
           <el-form ref="nameFormRef" :model="nameForm" :rules="nameRules" label-width="80px">
             <el-form-item label="新用户名" prop="userName">
@@ -46,9 +43,10 @@
               <el-button type="primary" :loading="nameLoading" @click="handleChangeName">保存</el-button>
             </el-form-item>
           </el-form>
+        </div>
 
-          <el-divider />
-
+        <!-- 右：修改密码 -->
+        <div class="settings-card">
           <h3 class="card-title"><i class="fas fa-lock"></i> 修改密码</h3>
           <el-form ref="pwdFormRef" :model="pwdForm" :rules="pwdRules" label-width="80px">
             <el-form-item label="原密码" prop="oldPassword">
@@ -188,7 +186,7 @@ const handleChangeName = async () => {
 .profile-username { font-size: 18px; font-weight: 700; color: #1f2937; }
 
 /* 双列 */
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .settings-card { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; }
 .card-title { font-size: 15px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; }
 .card-title i { color: #6366f1; font-size: 14px; width: 20px; text-align: center; }
