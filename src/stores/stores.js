@@ -25,32 +25,20 @@ export const useAuthStore = defineStore('auth', () => {
 
   //查询用户信息
   async function getuserdateandid(){
-    // 1. 从 JWT token 中解析用户 ID
-    let userId = null
+    // GET /api/user 自动返回当前登录用户信息
     try {
-      const payload = JSON.parse(atob(token.value.split('.')[1]))
-      userId = payload.id || payload.userId || payload.user_id || payload.sub
-      console.log('🔍 [getuserdateandid] JWT userId:', userId, 'payload:', JSON.stringify(payload))
-    } catch (e) {
-      console.warn('🔍 [getuserdateandid] JWT 解析失败:', e.message)
-    }
-
-    if (userId) {
-      // 2. 用 userId 调用 GET /api/user 拿完整用户信息
-      try {
-        const res = await auth.selectuserdate(userId)
-        console.log('🔍 [getuserdateandid] selectuserdate 返回:', JSON.stringify(res))
-        if (res.code === 200 && res.data) {
-          userDate.value = res.data
-          console.log('🔍 [getuserdateandid] userDate 已赋值:', JSON.stringify(userDate.value))
-          return userDate.value
-        }
-      } catch (e) {
-        console.error('🔍 [getuserdateandid] selectuserdate 失败:', e)
+      const res = await auth.selectuserdate()
+      console.log('🔍 [getuserdateandid] selectuserdate 返回:', JSON.stringify(res))
+      if (res.code === 200 && res.data) {
+        userDate.value = res.data
+        console.log('🔍 [getuserdateandid] userDate 已赋值:', JSON.stringify(userDate.value))
+        return userDate.value
       }
+    } catch (e) {
+      console.error('🔍 [getuserdateandid] selectuserdate 失败:', e)
     }
 
-    // 3. 回退：调用 /me 拿字符串用户名
+    // 回退：调用 /me 拿字符串用户名
     try {
       const res = await auth.selectuserId()
       console.log('🔍 [getuserdateandid] selectuserId 回退:', JSON.stringify(res))
