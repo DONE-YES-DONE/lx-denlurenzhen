@@ -122,11 +122,11 @@
 
             <div class="float-card card-bottom-right">
               <div class="float-icon report">
-                <i class="fas fa-file-pdf"></i>
+                <i class="fas fa-cogs"></i>
               </div>
               <div class="float-content">
-                <span class="float-title">报告生成</span>
-                <span class="float-status online">可用</span>
+                <span class="float-title">检测管理</span>
+                <span class="float-status online">监控中</span>
               </div>
             </div>
           </div>
