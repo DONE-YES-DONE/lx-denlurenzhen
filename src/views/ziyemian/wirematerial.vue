@@ -124,27 +124,27 @@
         @row-click="openTableRow"
         highlight-current-row
       >
-        <el-table-column prop="batchNo" label="批号" width="140" align="center">
+        <el-table-column prop="batchNo" label="批号" width="130" align="center">
           <template #default="{ row }">
             <span class="table-batch-no">#{{ row.batchNo }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="rollNo" label="卷序" width="110" align="center" />
-        <el-table-column prop="deviceId" label="设备" width="120" align="center" />
-        <el-table-column prop="scenarioCode" label="场景" width="110" align="center" />
-        <el-table-column label="直径 (mm)" width="140" align="center">
+        <el-table-column prop="rollNo" label="卷序" width="100" align="center" />
+        <el-table-column prop="deviceId" label="设备" width="110" align="center" />
+        <el-table-column prop="scenarioCode" label="场景" width="100" align="center" />
+        <el-table-column label="直径 (mm)" width="130" align="center">
           <template #default="{ row }">{{ row.diameter }}</template>
         </el-table-column>
-        <el-table-column label="电导率(MS/m)" width="130" align="center">
+        <el-table-column label="电导率(MS/m)" width="120" align="center">
           <template #default="{ row }">{{ row.resistance }}</template>
         </el-table-column>
-        <el-table-column label="延展率 (%)" width="140" align="center">
+        <el-table-column label="延展率 (%)" width="130" align="center">
           <template #default="{ row }">{{ row.extensibility }}</template>
         </el-table-column>
-        <el-table-column label="重量 (g)" width="130" align="center">
+        <el-table-column label="重量 (g)" width="120" align="center">
           <template #default="{ row }">{{ row.weight }}</template>
         </el-table-column>
-        <el-table-column label="置信度" width="140" align="center">
+        <el-table-column label="置信度" width="130" align="center">
           <template #default="{ row }">
             <template v-if="row.modelConfidence != null">
               <div class="mini-progress">
@@ -158,7 +158,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="结果" min-width="150" align="center">
+        <el-table-column label="结果" min-width="140" align="center">
           <template #default="{ row }">
             <span class="device-tag" :class="row.tagClass">
               <span class="device-dot"></span>
@@ -166,17 +166,17 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="评估" min-width="200" align="center" show-overflow-tooltip>
+        <el-table-column label="评估" min-width="190" align="center" show-overflow-tooltip>
           <template #default="{ row }">
             <span v-if="row.evaluationMessage" class="eval-text">{{ row.evaluationMessage }}</span>
             <span v-else class="text-muted">—</span>
           </template>
         </el-table-column>
-        <el-table-column prop="responsiblePerson" label="负责人" min-width="130" align="center" />
-        <el-table-column label="时间" width="210" align="center">
+        <el-table-column prop="responsiblePerson" label="负责人" min-width="120" align="center" />
+        <el-table-column label="时间" width="200" align="center">
           <template #default="{ row }">{{ row.createTime }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="130" fixed="right" align="center">
+        <el-table-column label="操作" width="120" fixed="right" align="center">
           <template #default="{ row }">
             <el-button type="primary" link size="small" class="action-btn" @click.stop="handleView(row)"><i class="fas fa-eye"></i> 查看</el-button>
           </template>
