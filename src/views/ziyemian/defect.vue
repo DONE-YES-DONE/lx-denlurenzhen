@@ -179,7 +179,6 @@ import defectApi from '@/api/defect'
 
 // ==================== 列表 ====================
 const tableData = ref([])
-const batchList = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -267,18 +266,15 @@ const loadList = async () => {
 
 const handleSearch = async () => {
   if (!searchBatch.value) { currentPage.value = 1; loadList(); return }
-  // 本地没有该批次数据，加载全部列表后客户端过滤
-  if (!batchList.value.includes(searchBatch.value)) {
-    ElMessage.warning('未找到该批次'); tableData.value = []; total.value = 0
-    return
-  }
   loading.value = true
   try {
-    const res = await defectApi.selectDefectList(1, 9999)
+    const res = await defectApi.selectDefectByBatch(searchBatch.value)
     if (res.code === 200) {
-      const rows = (res.data.records || []).filter(r => String(r.batchNumber) === searchBatch.value)
-      if (rows.length) { tableData.value = rows; total.value = rows.length }
+      const arr = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : [])
+      if (arr.length) { tableData.value = arr; total.value = arr.length }
       else { ElMessage.warning('未找到该批次'); tableData.value = []; total.value = 0 }
+    } else {
+      ElMessage.warning('未找到该批次'); tableData.value = []; total.value = 0
     }
   } catch { ElMessage.error('查询失败') }
   loading.value = false
@@ -293,7 +289,7 @@ const sortData = () => {
   rows.sort((a, b) => dir * (new Date(a.createTime || 0).getTime() - new Date(b.createTime || 0).getTime()))
   tableData.value = [...rows, ...empty]
 }
-const handleRefresh = () => { searchBatch.value = ''; currentPage.value = 1; loadList(); loadBatches() }
+const handleRefresh = () => { searchBatch.value = ''; currentPage.value = 1; loadList() }
 const handlePageChange = () => { loadList().then(() => sortData()) }
 
 const handleExport = () => {
@@ -306,13 +302,6 @@ const handleExport = () => {
   const blob = new Blob(['﻿' + csv.join('\n')], { type: 'text/csv;charset=utf-8' })
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `表面缺陷检测_${new Date().toISOString().slice(0,10)}.csv`; a.click()
   ElMessage.success('导出成功')
-}
-
-const loadBatches = async () => {
-  try {
-    const res = await defectApi.selectDefectList(1, 100)
-    if (res.code === 200) batchList.value = (res.data.records || []).map(r => String(r.batchNumber))
-  } catch {}
 }
 
 const handleViewImages = (row) => {
@@ -328,7 +317,7 @@ const handleViewImages = (row) => {
   drawerVisible.value = true
 }
 
-onMounted(() => { loadList(); loadBatches(); window.addEventListener('keydown', onKeyDown) })
+onMounted(() => { loadList(); window.addEventListener('keydown', onKeyDown) })
 onBeforeUnmount(() => { window.removeEventListener('keydown', onKeyDown) })
 </script>
 
