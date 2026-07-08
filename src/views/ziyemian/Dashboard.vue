@@ -530,21 +530,39 @@ function renderBatchCharts() {
     }
 
     if (isLine) {
-      option.series = [{
-        type: 'line',
-        smooth: true,
-        lineStyle: { width: 2, color: '#6366f1' },
-        data: values.map(v => {
-          const qualified = v >= range.min && v <= range.max
-          return {
-            value: v,
-            symbol: 'circle',
-            symbolSize: qualified ? 6 : 10,
-            itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
-          }
-        }),
-        markLine
-      }]
+      // 逐段着色：两端都合格=绿线，否则=红线
+      const segSeries = []
+      for (let i = 0; i < values.length - 1; i++) {
+        const qA = values[i] >= range.min && values[i] <= range.max
+        const qB = values[i + 1] >= range.min && values[i + 1] <= range.max
+        const segColor = (qA && qB) ? '#22c55e' : '#ef4444'
+        segSeries.push({
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          lineStyle: { width: 2, color: segColor },
+          data: values.map((v, j) => (j === i || j === i + 1) ? v : null)
+        })
+      }
+      option.series = [
+        ...segSeries,
+        {
+          type: 'line',
+          smooth: true,
+          lineStyle: { width: 0 },
+          symbol: 'circle',
+          data: values.map(v => {
+            const qualified = v >= range.min && v <= range.max
+            return {
+              value: v,
+              symbolSize: qualified ? 6 : 10,
+              itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
+            }
+          }),
+          markLine,
+          z: 10
+        }
+      ]
     } else {
       option.series = [{
         type: 'bar',

@@ -625,26 +625,33 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           markLine
         }]
       }
+      // 逐段着色：两端都合格=绿线，否则=红线
+      const segSeries = []
+      for (let i = 0; i < values.length - 1; i++) {
+        const qA = range ? (values[i] >= range.min && values[i] <= range.max) : true
+        const qB = range ? (values[i + 1] >= range.min && values[i + 1] <= range.max) : true
+        const segColor = (qA && qB) ? '#22c55e' : '#ef4444'
+        segSeries.push({
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          lineStyle: { width: 2, color: segColor },
+          data: values.map((v, j) => (j === i || j === i + 1) ? v : null)
+        })
+      }
       const lineData = values.map(v => {
         const qualified = range ? (v >= range.min && v <= range.max) : true
         return {
           value: v,
           symbol: 'circle',
           symbolSize: qualified ? 6 : 10,
-          itemStyle: {
-            color: qualified ? '#22c55e' : '#ef4444',
-            borderColor: '#fff',
-            borderWidth: 2
-          }
+          itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
         }
       })
-      return [{
-        type: 'line',
-        smooth: true,
-        lineStyle: { width: 2, color: range ? '#6366f1' : '#6366f1' },
-        data: lineData,
-        markLine
-      }]
+      return [
+        ...segSeries,
+        { type: 'line', smooth: true, lineStyle: { width: 0 }, symbol: 'circle', data: lineData, markLine, z: 10 }
+      ]
     })()
   }
 }
