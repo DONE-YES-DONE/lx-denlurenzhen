@@ -359,7 +359,7 @@ const loadChartData = async () => {
 const comboOption = () => ({
   tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
   legend: { data: ['合格率', '合格数量', '不合格数量'], right: 20, top: 0, textStyle: { fontSize: 12 } },
-  grid: { left: '4%', right: '6%', bottom: '8%', top: '16%', containLabel: true },
+  grid: { left: '8%', right: '6%', bottom: '8%', top: '16%', containLabel: true },
   dataZoom: [{ type: 'slider', start: 0, end: 100, bottom: 6, height: 20, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } }],
   xAxis: { type: 'category', data: qualityData.value.dates, axisLine: { lineStyle: { color: '#e5e7eb' } }, axisTick: { show: false } },
   yAxis: [
@@ -389,7 +389,7 @@ function renderDefectBar() {
   const hasData = defectData.value.some(v => v > 0)
   defectBarInstance.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    grid: { left: '4%', right: '8%', bottom: '8%', top: '8%', containLabel: true },
+    grid: { left: '8%', right: '8%', bottom: '8%', top: '8%', containLabel: true },
     xAxis: {
       type: 'category',
       data: DEFECT_LABELS,
@@ -513,7 +513,7 @@ function renderBatchCharts() {
           return html
         }
       },
-      grid: { left: '4%', right: '6%', bottom: '12%', top: '8%', containLabel: true },
+      grid: { left: '8%', right: '6%', bottom: '12%', top: '8%', containLabel: true },
       dataZoom: buildDataZoom(values),
       xAxis: {
         type: 'category', data: xData,

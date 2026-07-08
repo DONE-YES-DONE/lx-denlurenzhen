@@ -589,7 +589,7 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
         return html
       }
     },
-    grid: { left: '4%', right: '6%', bottom: '12%', top: '8%', containLabel: true },
+    grid: { left: '8%', right: '6%', bottom: '12%', top: '8%', containLabel: true },
     dataZoom: [
       { type: 'slider', start: 0, end: Math.min(100, Math.ceil(100 * 10 / values.length)), bottom: 6, height: 18, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } },
       { type: 'inside', start: 0, end: Math.min(100, Math.ceil(100 * 10 / values.length)) }
