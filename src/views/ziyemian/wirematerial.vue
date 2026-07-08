@@ -166,6 +166,12 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column label="评估" min-width="200" align="center" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span v-if="row.evaluationMessage" class="eval-text">{{ row.evaluationMessage }}</span>
+            <span v-else class="text-muted">—</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="responsiblePerson" label="负责人" min-width="130" align="center" />
         <el-table-column label="时间" width="210" align="center">
           <template #default="{ row }">{{ row.createTime }}</template>
@@ -201,6 +207,7 @@
         <el-descriptions-item label="延展率">{{ currentRow.extensibility }}%</el-descriptions-item>
         <el-descriptions-item label="重量">{{ currentRow.weight }} g</el-descriptions-item>
         <el-descriptions-item label="置信度">{{ currentRow.modelConfidence }}</el-descriptions-item>
+        <el-descriptions-item label="评估" :span="2">{{ currentRow.evaluationMessage || '—' }}</el-descriptions-item>
         <el-descriptions-item label="生产商">{{ currentRow.manufacturer }}</el-descriptions-item>
         <el-descriptions-item label="负责人">{{ currentRow.responsiblePerson }}</el-descriptions-item>
         <el-descriptions-item label="工艺类型">{{ currentRow.processType }}</el-descriptions-item>
@@ -443,10 +450,10 @@ const handleExport = () => {
   if (!rows.length) { ElMessage.warning('没有可导出的数据'); return }
   const cols = viewMode.value === 'card'
     ? ['batchNo','scenarioCode','diameter','resistance','extensibility','weight']
-    : ['batchNo','rollNo','deviceId','scenarioCode','diameter','resistance','extensibility','weight','manufacturer','responsiblePerson','createTime']
+    : ['batchNo','rollNo','deviceId','scenarioCode','diameter','resistance','extensibility','weight','manufacturer','responsiblePerson','evaluationMessage','createTime']
   const labels = viewMode.value === 'card'
     ? ['批次号','场景','直径(mm)','电导率(MS/m)','延展率(%)','重量(g)']
-    : ['批次号','卷序','设备ID','场景','直径(mm)','电导率(MS/m)','延展率(%)','重量(g)','生产商','负责人','检测时间']
+    : ['批次号','卷序','设备ID','场景','直径(mm)','电导率(MS/m)','延展率(%)','重量(g)','生产商','负责人','评估','检测时间']
   const csv = [labels.join(',')]
   rows.forEach(r => csv.push(cols.map(c => { const v = r[c]; return v != null ? `"${String(v).replace(/"/g,'""')}"` : '' }).join(',')))
   const blob = new Blob(['﻿' + csv.join('\n')], { type: 'text/csv;charset=utf-8' })
@@ -835,6 +842,7 @@ onBeforeUnmount(() => { window.removeEventListener('resize', onResize); chartIns
 .mini-progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
 .mini-progress-text { font-size: 12px; font-weight: 600; white-space: nowrap; min-width: 42px; text-align: right; }
 .text-muted { color: #9ca3af; }
+.eval-text { font-size: 12px; color: #4b5563; line-height: 1.4; }
 
 /* 加载闪烁 */
 .table-card :deep(.el-loading-mask) { background: rgba(255,255,255,0.6); backdrop-filter: blur(2px); }
