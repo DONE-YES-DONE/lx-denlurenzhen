@@ -1,0 +1,53 @@
+import { requestDefect } from './requst';
+
+export default {
+  // 分页查询缺陷数据
+  async selectDefectList(current, size = 10) {
+    const res = await requestDefect.get('/list', { params: { current, size } })
+    return res.data
+  },
+
+  // 根据批次号查询缺陷数据
+  async selectDefectByBatch(batchNumber) {
+    try {
+      const res = await requestDefect.get(`/info/${batchNumber}`)
+      return res.data
+    } catch (error) {
+      console.error('查询失败', error.response?.data)
+      throw error
+    }
+  },
+
+  // 【后端待实现】新增检测批次
+  async createDefect(data) {
+    try {
+      const res = await requestDefect.post('/', data)
+      return res.data
+    } catch (error) {
+      console.error('创建失败（后端暂未实现该接口）', error.response?.data)
+      throw error
+    }
+  },
+
+  // 【后端待实现】更新检测批次
+  async updateDefect(id, data) {
+    try {
+      const res = await requestDefect.put(`/${id}`, data)
+      return res.data
+    } catch (error) {
+      console.error('修改失败（后端暂未实现该接口）', error.response?.data)
+      throw error
+    }
+  },
+
+  // 【后端待实现】删除检测批次
+  async deleteDefect(id) {
+    try {
+      const res = await requestDefect.delete(`/${id}`)
+      return res.data
+    } catch (error) {
+      console.error('删除失败（后端暂未实现该接口）', error.response?.data)
+      throw error
+    }
+  }
+}
