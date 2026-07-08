@@ -23,9 +23,9 @@
       <!-- 双列布局 -->
       <div class="settings-grid">
         <!-- 左：用户信息 -->
-        <div class="settings-card" style="padding-top: 48px;">
+        <div class="settings-card">
           <h3 class="card-title"><i class="fas fa-id-card"></i> 基本信息</h3>
-          <el-descriptions :column="1" border>
+          <el-descriptions :column="1" border style="margin-top: 40px;">
             <el-descriptions-item label="用户ID">{{ authStore.userDate?.id || '—' }}</el-descriptions-item>
             <el-descriptions-item label="用户名">{{ authStore.userDate?.userName || '—' }}</el-descriptions-item>
             <el-descriptions-item label="邮箱">{{ authStore.userDate?.email || '—' }}</el-descriptions-item>
