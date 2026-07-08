@@ -359,7 +359,7 @@ const buildTableParams = () => {
 const loadTableData = async () => {
   tableLoading.value = true
   try {
-    const res = await wireMaterialApi.selectWirePage(buildTableParams())
+    const res = await wireMaterialApi.selectWireList(currentPage.value, pageSize.value)
     const p = res.data ?? res
     const records = p.records || []
     tableData.value = records.map(r => ({
