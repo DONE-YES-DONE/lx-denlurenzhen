@@ -233,16 +233,16 @@
             <div ref="diameterChartRef" class="detail-chart"></div>
           </div>
           <div class="detail-chart-card">
-            <div class="detail-chart-title">电导率 (MS/m)</div>
-            <div ref="resistanceChartRef" class="detail-chart"></div>
+            <div class="detail-chart-title">重量 (g)</div>
+            <div ref="weightChartRef" class="detail-chart"></div>
           </div>
           <div class="detail-chart-card">
             <div class="detail-chart-title">延展率 (%)</div>
             <div ref="extensibilityChartRef" class="detail-chart"></div>
           </div>
           <div class="detail-chart-card">
-            <div class="detail-chart-title">重量 (g)</div>
-            <div ref="weightChartRef" class="detail-chart"></div>
+            <div class="detail-chart-title">电导率 (MS/m)</div>
+            <div ref="resistanceChartRef" class="detail-chart"></div>
           </div>
         </div>
 
@@ -622,11 +622,11 @@ function renderAllCharts() {
   if (!batch?.rolls?.length) return
   const refs = [
     { ref: diameterChartRef, key: 'diameter', unit: 'mm' },
-    { ref: resistanceChartRef, key: 'resistance', unit: 'MS/m' },
+    { ref: weightChartRef, key: 'weight', unit: 'g' },
     { ref: extensibilityChartRef, key: 'extensibility', unit: '%' },
-    { ref: weightChartRef, key: 'weight', unit: 'g' }
+    { ref: resistanceChartRef, key: 'resistance', unit: 'MS/m' }
   ]
-  const titles = ['直径', '电导率', '延展率', '重量']
+  const titles = ['直径', '重量', '延展率', '电导率']
   refs.forEach((r, i) => {
     if (!r.ref.value) return
     const instance = echarts.init(r.ref.value)
