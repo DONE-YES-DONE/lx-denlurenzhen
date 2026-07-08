@@ -625,28 +625,7 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           markLine
         }]
       }
-      // 每条线段独立 series，相邻两点间渐变
-      const segmentSeries = []
-      for (let i = 0; i < values.length - 1; i++) {
-        const qA = range ? (values[i] >= range.min && values[i] <= range.max) : true
-        const qB = range ? (values[i + 1] >= range.min && values[i + 1] <= range.max) : true
-        const cA = qA ? '#22c55e' : '#ef4444'
-        const cB = qB ? '#22c55e' : '#ef4444'
-        segmentSeries.push({
-          type: 'line',
-          smooth: true,
-          symbol: 'none',
-          lineStyle: {
-            width: 2,
-            color: new echarts.graphic.LinearGradient(i / (values.length - 1), 0, (i + 1) / (values.length - 1), 0, [
-              { offset: 0, color: cA }, { offset: 1, color: cB }
-            ])
-          },
-          data: values.map((v, j) => (j === i || j === i + 1) ? v : null)
-        })
-      }
-      // 点层（叠在线上方）
-      const pointData = values.map(v => {
+      const lineData = values.map(v => {
         const qualified = range ? (v >= range.min && v <= range.max) : true
         return {
           value: v,
@@ -659,18 +638,13 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           }
         }
       })
-      return [
-        ...segmentSeries,
-        {
-          type: 'line',
-          smooth: true,
-          lineStyle: { width: 0 },
-          symbol: 'circle',
-          data: pointData,
-          markLine,
-          z: 10
-        }
-      ]
+      return [{
+        type: 'line',
+        smooth: true,
+        lineStyle: { width: 2, color: range ? '#6366f1' : '#6366f1' },
+        data: lineData,
+        markLine
+      }]
     })()
   }
 }
