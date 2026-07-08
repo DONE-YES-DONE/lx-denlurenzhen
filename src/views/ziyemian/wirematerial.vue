@@ -626,14 +626,12 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
         }
       }
       const lineVisualMap = range ? {
-        type: 'piecewise',
+        type: 'continuous',
         show: false,
         dimension: 1,
-        pieces: [
-          { gte: range.min, lte: range.max, color: '#22c55e' },
-          { lt: range.min, color: '#ef4444' },
-          { gt: range.max, color: '#ef4444' }
-        ]
+        min: range.min - (range.max - range.min) * 0.3,
+        max: range.max + (range.max - range.min) * 0.3,
+        inRange: { color: ['#ef4444', '#22c55e', '#ef4444'] }
       } : undefined
       const lineData = values.map(v => {
         const qualified = range ? (v >= range.min && v <= range.max) : true
