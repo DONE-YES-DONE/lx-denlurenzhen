@@ -44,7 +44,7 @@
           <div class="user-dropdown" @mouseenter="showDropdownMenu" @mouseleave="hideDropdownMenu">
             <div class="user-info">
               <div class="user-avatar">
-                <img v-if="userAvatar" :src="userAvatar" class="avatar-img" />
+                <img v-if="userAvatar" :src="userAvatar" class="avatar-img" @error="onAvatarError" />
                 <span v-else class="avatar-letter">{{ avatarLetter }}</span>
               </div>
               <div class="user-detail">
@@ -256,13 +256,16 @@ const avatarLetter = computed(() => {
   const name = authStore.userDate?.userName || ''
   return name ? name.charAt(0).toUpperCase() : 'U'
 })
-// 用户头像：优先用后端返回的 avatarUrl，否则用 ui-avatars 生成首字母头像
+// 用户头像：优先用后端返回的 avatarUrl，加载失败则用 ui-avatars
+const avatarLoadError = ref(false)
 const userAvatar = computed(() => {
+  if (avatarLoadError.value) return ''
   const url = authStore.userDate?.avatarUrl
   if (url) return url
   const name = authStore.userDate?.userName || 'User'
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=64&bold=true`
 })
+const onAvatarError = () => { avatarLoadError.value = true }
 // 是否管理员
 const isAdmin = computed(() => {
   const u = authStore.userDate

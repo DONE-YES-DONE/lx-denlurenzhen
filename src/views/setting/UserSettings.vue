@@ -12,7 +12,7 @@
           <!-- 头像 + 名称 醒目区域 -->
           <div class="profile-header">
             <div class="profile-avatar">
-              <img v-if="authStore.userDate?.avatarUrl" :src="authStore.userDate.avatarUrl" class="profile-avatar-img" />
+              <img v-if="authStore.userDate?.avatarUrl && !avatarLoadError" :src="authStore.userDate.avatarUrl" class="profile-avatar-img" @error="avatarLoadError = true" />
               <span v-else class="profile-avatar-letter">{{ (authStore.userDate?.userName || 'U').charAt(0).toUpperCase() }}</span>
             </div>
             <div class="profile-names">
@@ -91,6 +91,7 @@ import { requestUser } from '@/api/requst'
 // ==================== 基础 ====================
 const authStore = useAuthStore()
 const activeTab = ref('info')
+const avatarLoadError = ref(false)
 const isRoot = computed(() => {
   const u = authStore.userDate
   if (!u) return false
