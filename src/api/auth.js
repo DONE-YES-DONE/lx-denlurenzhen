@@ -40,8 +40,8 @@ export default {
   //根据用户id查询用户信息
   async selectuserdate(userId){
     try{
-      //调用拦截器
-      const axiosResponse = await requestUser.get(`/${userId}`)
+      // GET /api/user?userId=xxx
+      const axiosResponse = await requestUser.get('/', { params: { userId } })
       return axiosResponse.data
     }catch(error){
       console.log('查询失败',error.response?.data);
