@@ -625,15 +625,36 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           markLine
         }
       }
+      const lineVisualMap = range ? {
+        type: 'piecewise',
+        show: false,
+        dimension: 1,
+        pieces: [
+          { gte: range.min, lte: range.max, color: '#22c55e' },
+          { lt: range.min, color: '#ef4444' },
+          { gt: range.max, color: '#ef4444' }
+        ]
+      } : undefined
+      const lineData = values.map(v => {
+        const qualified = range ? (v >= range.min && v <= range.max) : true
+        return {
+          value: v,
+          symbol: 'circle',
+          symbolSize: qualified ? 6 : 10,
+          itemStyle: {
+            color: qualified ? '#22c55e' : '#ef4444',
+            borderColor: '#fff',
+            borderWidth: 2
+          }
+        }
+      })
       return {
+        visualMap: lineVisualMap,
         type: 'line',
         smooth: true,
-        symbol: 'circle',
-        symbolSize: 7,
-        lineStyle: { width: 2, color: '#6366f1' },
-        itemStyle: { color: '#6366f1', borderColor: '#fff', borderWidth: 2 },
-        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0.0)' }]) },
-        data: values,
+        lineStyle: { width: 2, color: range ? undefined : '#6366f1' },
+        areaStyle: range ? undefined : { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0.0)' }]) },
+        data: lineData,
         markLine
       }
     })()]
