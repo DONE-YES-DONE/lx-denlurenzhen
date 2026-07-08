@@ -127,6 +127,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import wireMaterialApi from '@/api/wire-material'
 
 const route = useRoute()
 const baseUrl = window.location.origin
@@ -174,23 +175,31 @@ const fmtTime = computed(() => {
   return t.replace('T', ' ').substring(0, 19)
 })
 
-const loadData = () => {
+const loadData = async () => {
   loading.value = true
   errorMsg.value = ''
-  const batchNo = route.params.batchNo || 25
-  const rollNo = route.params.rollNo || 4
-  setTimeout(() => {
-    data.value = {
-      batchNumber: 62641028565303299, batchNo: Number(batchNo), rollNo: Number(rollNo),
-      deviceId: 'DEV012', diameter: 0.25, resistance: 64.12, extensibility: 26.34, weight: 1.22,
-      productionMachine: 'MACH-298', responsiblePerson: '张工', processType: '连铸连轧',
-      scenarioCode: '05', modelEvaluationResult: 'PASS', modelConfidence: 0.7746,
-      avgConfidence: null, scratchCount: 3, blockDefectCount: 1, clusterDefectCount: 2,
-      metalBurrCount: 5, scuffCount: 1, imgUrls: null, createTime: '2026-06-10 04:48:33'
-    }
-    ElMessage.success('溯源信息加载完成')
+  const batchNo = route.params.batchNo
+  const rollNo = route.params.rollNo
+  if (!batchNo || !rollNo) {
+    errorMsg.value = '缺少批次号或卷序号参数，请扫描正确的二维码'
     loading.value = false
-  }, 400)
+    return
+  }
+  try {
+    const res = await wireMaterialApi.selectWireInfoWithDetection(batchNo, rollNo)
+    const d = res.data ?? res
+    if (d && d.wireInfo) {
+      // API 返回 { wireInfo, defects }
+      data.value = { ...d.wireInfo, defects: d.defects || [] }
+    } else {
+      data.value = d
+    }
+    loading.value = false
+  } catch (e) {
+    console.error('溯源信息加载失败', e)
+    errorMsg.value = '加载失败，请稍后重试'
+    loading.value = false
+  }
 }
 
 onMounted(() => { loadData(); window.addEventListener('resize', onResize) })

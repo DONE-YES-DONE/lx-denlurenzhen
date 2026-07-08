@@ -40,6 +40,12 @@ const router = createRouter({
       component: () => import('../views/zhuyemian/ResetPassword.vue')
     },
     {
+      // 二维码溯源页（无需登录）
+      path: '/qr/:batchNo?/:rollNo?',
+      name: 'qr',
+      component: () => import('../views/ziyemian/Qrcode.vue')
+    },
+    {
       //主页
       path: '/home',
       redirect: '/home/Dashboard',
