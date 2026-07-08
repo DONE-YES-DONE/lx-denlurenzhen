@@ -126,10 +126,12 @@ const handleChangePassword = async () => {
     if (!valid) return
     pwdLoading.value = true
     try {
-      // POST /api/user/change-password  { oldPassword, newPassword }
-      const res = await requestUser.post('/change-password', {
-        oldPassword: pwdForm.oldPassword,
-        newPassword: pwdForm.newPassword
+      // PUT /api/user/password?oldPassWord=xxx&newPassWord=xxx
+      const res = await requestUser.put('/password', null, {
+        params: {
+          oldPassWord: pwdForm.oldPassword,
+          newPassWord: pwdForm.newPassword
+        }
       })
       if (res.data?.code === 200) {
         ElMessage.success('密码修改成功')
