@@ -482,43 +482,62 @@ function renderBatchCharts() {
     const values = batchRolls.value.map(r => r[p.key])
     const xData = batchRolls.value.map(r => '卷' + r.rollNo)
     const isLine = batchChartType.value === 'line'
+    const range = { min: p.min, max: p.max }
+
+    const buildDataZoom = (vals) => [
+      { type: 'slider', start: 0, end: Math.min(100, Math.ceil(100 * 10 / vals.length)), bottom: 6, height: 18, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } },
+      { type: 'inside', start: 0, end: Math.min(100, Math.ceil(100 * 10 / vals.length)) }
+    ]
+
     const markLine = {
       silent: true,
       symbol: 'none',
-      lineStyle: { type: 'dashed', color: '#22c55e', width: 1 },
-      label: { fontSize: 9, color: '#22c55e', formatter: '{c}' },
+      lineStyle: { type: 'dashed', width: 1.5 },
       data: [
-        { yAxis: p.min, name: '下限' },
-        { yAxis: p.max, name: '上限' }
+        { yAxis: range.min, name: '下限', label: { formatter: `下限 ${range.min}`, position: 'start', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
+        { yAxis: range.max, name: '上限', label: { formatter: `上限 ${range.max}`, position: 'end', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
       ]
     }
+
     const option = {
-      tooltip: { trigger: 'axis', formatter: params => `${params[0].axisValue}<br/>${p.label}: <b>${params[0].value} ${p.unit}</b>` },
-      grid: { left: '6%', right: '6%', top: '10%', bottom: '10%' },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: (params) => {
+          const v = params[0].value
+          let html = `${params[0].axisValue}<br/>${p.label}: <b>${v} ${p.unit}</b>`
+          const status = v >= range.min && v <= range.max
+            ? '<span style="color:#22c55e">● 合格</span>'
+            : '<span style="color:#ef4444">● 不合格</span>'
+          html += `<br/>范围 [${range.min}, ${range.max}] ${status}`
+          return html
+        }
+      },
+      grid: { left: '4%', right: '6%', bottom: '12%', top: '8%', containLabel: true },
+      dataZoom: buildDataZoom(values),
       xAxis: {
         type: 'category', data: xData,
         axisLine: { lineStyle: { color: '#e5e7eb' } },
         axisTick: { show: false },
-        axisLabel: { color: '#9ca3af', fontSize: 10 }
+        axisLabel: { color: '#6b7280', fontSize: 11, interval: 0 }
       },
       yAxis: {
         type: 'value', name: p.unit,
-        nameTextStyle: { color: '#9ca3af', fontSize: 9 },
-        axisLabel: { color: '#9ca3af', fontSize: 9 },
-        splitLine: { lineStyle: { color: '#f3f4f6' } },
-        min: p.min * 0.9,
-        max: p.max * 1.1
+        nameTextStyle: { color: '#6b7280', fontSize: 10 },
+        axisLabel: { color: '#6b7280', fontSize: 10 },
+        splitLine: { lineStyle: { color: '#f3f4f6' } }
       }
     }
+
     if (isLine) {
       option.visualMap = {
         type: 'piecewise',
         show: false,
         dimension: 1,
         pieces: [
-          { gte: p.min, lte: p.max, color: '#22c55e' },
-          { lt: p.min, color: '#ef4444' },
-          { gt: p.max, color: '#ef4444' }
+          { gte: range.min, lte: range.max, color: '#22c55e' },
+          { lt: range.min, color: '#ef4444' },
+          { gt: range.max, color: '#ef4444' }
         ]
       }
       option.series = [{
@@ -526,29 +545,40 @@ function renderBatchCharts() {
         smooth: true,
         lineStyle: { width: 2 },
         data: values.map(v => {
-          const qualified = v >= p.min && v <= p.max
+          const qualified = v >= range.min && v <= range.max
           return {
             value: v,
             symbol: 'circle',
             symbolSize: qualified ? 6 : 10,
-            itemStyle: {
-              color: qualified ? '#22c55e' : '#ef4444',
-              borderColor: '#fff',
-              borderWidth: 2
-            }
+            itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
           }
         }),
         markLine
       }]
     } else {
-      const colors = values.map(v => (v < p.min || v > p.max) ? '#ef4444' : '#22c55e')
       option.series = [{
         type: 'bar',
-        barWidth: '50%',
-        data: values.map((v, j) => ({
-          value: v,
-          itemStyle: { color: colors[j], borderRadius: [4, 4, 0, 0] }
-        })),
+        barWidth: '55%',
+        data: values.map(v => {
+          const devBelow = Math.max(0, range.min - v) / Math.abs(range.min || 1)
+          const devAbove = Math.max(0, v - range.max) / Math.abs(range.max || 1)
+          const ratio = Math.min(1, devBelow + devAbove)
+          let color
+          if (ratio <= 0.01) {
+            color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#86efac' }, { offset: 1, color: '#22c55e' }
+            ])
+          } else {
+            const r = Math.round(239 - ratio * 40)
+            const g = Math.round(68 - ratio * 50)
+            const b = Math.round(68 - ratio * 50)
+            color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: `rgb(${r + 16},${g + 10},${b + 10})` },
+              { offset: 1, color: `rgb(${r},${g},${b})` }
+            ])
+          }
+          return { value: v, itemStyle: { color, borderRadius: [4, 4, 0, 0] } }
+        }),
         markLine
       }]
     }
@@ -713,7 +743,7 @@ onBeforeUnmount(() => {
 .mini-chart-card { background: #f8fafc; border-radius: 10px; padding: 12px 14px; border: 1px solid #e5e7eb; }
 .mini-chart-title { font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 4px; }
 .mini-chart-unit { font-size: 11px; color: #9ca3af; font-weight: 400; }
-.mini-chart { width: 100%; height: 200px; }
+.mini-chart { width: 100%; height: 240px; }
 
 @media (max-width: 1200px) { .stats-cards { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } .batch-charts-2x2 { grid-template-columns: 1fr; } }
 @media (max-width: 768px) { .stats-cards { grid-template-columns: 1fr; } }
