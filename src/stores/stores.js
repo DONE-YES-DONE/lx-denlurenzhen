@@ -27,17 +27,18 @@ export const useAuthStore = defineStore('auth', () => {
   async function getuserdateandid(){
     const res = await auth.selectuserId()
     console.log('🔍 [getuserdateandid] selectuserId 原始返回:', JSON.stringify(res))
-    console.log('🔍 [getuserdateandid] res.code:', res.code, 'res.data keys:', res.data ? Object.keys(res.data) : 'null')
-    if (res.code === 200 && res.data) {
-      userDate.value = res.data
-      console.log('🔍 [getuserdateandid] userDate 已赋值:', JSON.stringify(userDate.value))
-      // 如果API没返回roleId，尝试从JWT解析
-      if (userDate.value.roleId == null && userDate.value.role == null) {
-        try {
-          const payload = JSON.parse(atob(token.value.split('.')[1]))
-          userDate.value.roleId = payload.roleId || payload.role_id || payload.role
-        } catch {}
+    if (res.code === 200) {
+      // 后端 /me 只返回字符串（用户名/角色名），包装为最小用户对象
+      if (typeof res.data === 'string') {
+        userDate.value = {
+          userName: res.data,
+          avatarUrl: '',
+          roleId: res.data === 'Admin' ? 1 : 2
+        }
+      } else if (res.data) {
+        userDate.value = res.data
       }
+      console.log('🔍 [getuserdateandid] userDate 已赋值:', JSON.stringify(userDate.value))
     }
     return userDate.value
   }
