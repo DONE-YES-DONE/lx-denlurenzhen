@@ -591,9 +591,9 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
       axisLabel: { color: '#6b7280', fontSize: 10 },
       splitLine: { lineStyle: { color: '#f3f4f6' } }
     },
-    series: [(() => {
+    series: (() => {
       if (type === 'bar') {
-        return {
+        return [{
           type: 'bar',
           barWidth: '55%',
           data: values.map(v => {
@@ -623,17 +623,30 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
             return { value: v, itemStyle: { color, borderRadius: [4, 4, 0, 0] } }
           }),
           markLine
-        }
+        }]
       }
-      const lineVisualMap = range ? {
-        type: 'continuous',
-        show: false,
-        dimension: 1,
-        min: range.min - (range.max - range.min) * 0.3,
-        max: range.max + (range.max - range.min) * 0.3,
-        inRange: { color: ['#ef4444', '#22c55e', '#ef4444'] }
-      } : undefined
-      const lineData = values.map(v => {
+      // 每条线段独立 series，相邻两点间渐变
+      const segmentSeries = []
+      for (let i = 0; i < values.length - 1; i++) {
+        const qA = range ? (values[i] >= range.min && values[i] <= range.max) : true
+        const qB = range ? (values[i + 1] >= range.min && values[i + 1] <= range.max) : true
+        const cA = qA ? '#22c55e' : '#ef4444'
+        const cB = qB ? '#22c55e' : '#ef4444'
+        segmentSeries.push({
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          lineStyle: {
+            width: 2,
+            color: new echarts.graphic.LinearGradient(i / (values.length - 1), 0, (i + 1) / (values.length - 1), 0, [
+              { offset: 0, color: cA }, { offset: 1, color: cB }
+            ])
+          },
+          data: values.map((v, j) => (j === i || j === i + 1) ? v : null)
+        })
+      }
+      // 点层（叠在线上方）
+      const pointData = values.map(v => {
         const qualified = range ? (v >= range.min && v <= range.max) : true
         return {
           value: v,
@@ -646,16 +659,19 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           }
         }
       })
-      return {
-        visualMap: lineVisualMap,
-        type: 'line',
-        smooth: true,
-        lineStyle: { width: 2, color: range ? undefined : '#6366f1' },
-        areaStyle: range ? undefined : { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0.0)' }]) },
-        data: lineData,
-        markLine
-      }
-    })()]
+      return [
+        ...segmentSeries,
+        {
+          type: 'line',
+          smooth: true,
+          lineStyle: { width: 0 },
+          symbol: 'circle',
+          data: pointData,
+          markLine,
+          z: 10
+        }
+      ]
+    })()
   }
 }
 

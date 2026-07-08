@@ -530,29 +530,45 @@ function renderBatchCharts() {
     }
 
     if (isLine) {
-      option.visualMap = {
-        type: 'continuous',
-        show: false,
-        dimension: 1,
-        min: range.min - (range.max - range.min) * 0.3,
-        max: range.max + (range.max - range.min) * 0.3,
-        inRange: { color: ['#ef4444', '#22c55e', '#ef4444'] }
+      // 每条线段独立 series，相邻两点间渐变
+      const segmentSeries = []
+      for (let i = 0; i < values.length - 1; i++) {
+        const qA = values[i] >= range.min && values[i] <= range.max
+        const qB = values[i + 1] >= range.min && values[i + 1] <= range.max
+        const cA = qA ? '#22c55e' : '#ef4444'
+        const cB = qB ? '#22c55e' : '#ef4444'
+        segmentSeries.push({
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          lineStyle: {
+            width: 2,
+            color: new echarts.graphic.LinearGradient(i / (values.length - 1), 0, (i + 1) / (values.length - 1), 0, [
+              { offset: 0, color: cA }, { offset: 1, color: cB }
+            ])
+          },
+          data: values.map((v, j) => (j === i || j === i + 1) ? v : null)
+        })
       }
-      option.series = [{
-        type: 'line',
-        smooth: true,
-        lineStyle: { width: 2 },
-        data: values.map(v => {
-          const qualified = v >= range.min && v <= range.max
-          return {
-            value: v,
-            symbol: 'circle',
-            symbolSize: qualified ? 6 : 10,
-            itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
-          }
-        }),
-        markLine
-      }]
+      option.series = [
+        ...segmentSeries,
+        {
+          type: 'line',
+          smooth: true,
+          lineStyle: { width: 0 },
+          symbol: 'circle',
+          data: values.map(v => {
+            const qualified = v >= range.min && v <= range.max
+            return {
+              value: v,
+              symbolSize: qualified ? 6 : 10,
+              itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
+            }
+          }),
+          markLine,
+          z: 10
+        }
+      ]
     } else {
       option.series = [{
         type: 'bar',
