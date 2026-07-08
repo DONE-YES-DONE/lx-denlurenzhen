@@ -26,8 +26,11 @@ export const useAuthStore = defineStore('auth', () => {
   //查询用户信息
   async function getuserdateandid(){
     const res = await auth.selectuserId()
+    console.log('🔍 [getuserdateandid] selectuserId 原始返回:', JSON.stringify(res))
+    console.log('🔍 [getuserdateandid] res.code:', res.code, 'res.data keys:', res.data ? Object.keys(res.data) : 'null')
     if (res.code === 200 && res.data) {
       userDate.value = res.data
+      console.log('🔍 [getuserdateandid] userDate 已赋值:', JSON.stringify(userDate.value))
       // 如果API没返回roleId，尝试从JWT解析
       if (userDate.value.roleId == null && userDate.value.role == null) {
         try {
