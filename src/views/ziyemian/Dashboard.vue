@@ -367,8 +367,8 @@ const comboOption = () => ({
     { type: 'value', min: 80, max: 100, axisLabel: { color: '#6b7280', formatter: '{value}%' }, splitLine: { show: false } }
   ],
   series: [
-    { name: '合格数量', type: 'bar', yAxisIndex: 0, barWidth: '55%', data: qualityData.value.passCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4ade80' }, { offset: 1, color: '#22c55e' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
-    { name: '不合格数量', type: 'bar', yAxisIndex: 0, barWidth: '55%', data: qualityData.value.failCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#fca5a5' }, { offset: 1, color: '#ef4444' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
+    { name: '合格数量', type: 'bar', yAxisIndex: 0, barWidth: '40%', barGap: '30%', data: qualityData.value.passCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4ade80' }, { offset: 1, color: '#22c55e' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
+    { name: '不合格数量', type: 'bar', yAxisIndex: 0, barWidth: '40%', data: qualityData.value.failCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#fca5a5' }, { offset: 1, color: '#ef4444' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
     { name: '合格率', type: 'line', yAxisIndex: 1, smooth: true, symbol: 'circle', symbolSize: 6, data: passRateData.value.passRates, lineStyle: { color: '#3b82f6', width: 3 }, itemStyle: { color: '#3b82f6' }, label: { show: true, position: 'top', distance: 15, color: '#3b82f6', fontWeight: 'bold', fontSize: 10, formatter: '{c}%' } }
   ]
 })
