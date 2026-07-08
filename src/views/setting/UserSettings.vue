@@ -9,17 +9,22 @@
       <!-- ========== 用户信息 ========== -->
       <el-tab-pane label="用户信息" name="info">
         <div class="form-card">
+          <!-- 头像 + 名称 醒目区域 -->
+          <div class="profile-header">
+            <div class="profile-avatar">
+              <img v-if="authStore.userDate?.avatarUrl" :src="authStore.userDate.avatarUrl" class="profile-avatar-img" />
+              <span v-else class="profile-avatar-letter">{{ (authStore.userDate?.userName || 'U').charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="profile-names">
+              <span class="profile-username">{{ authStore.userDate?.userName || '—' }}</span>
+              <el-tag :type="isRoot ? 'danger' : ''" size="small">{{ isRoot ? '管理员' : '普通用户' }}</el-tag>
+            </div>
+          </div>
+          <el-divider />
           <el-descriptions :column="2" border size="small" style="max-width: 600px">
             <el-descriptions-item label="用户ID">{{ authStore.userDate?.id || '—' }}</el-descriptions-item>
             <el-descriptions-item label="用户名">{{ authStore.userDate?.userName || '—' }}</el-descriptions-item>
             <el-descriptions-item label="邮箱">{{ authStore.userDate?.email || '—' }}</el-descriptions-item>
-            <el-descriptions-item label="头像">
-              <span v-if="authStore.userDate?.avatarUrl" style="display:flex;align-items:center;gap:8px">
-                <img :src="authStore.userDate.avatarUrl" style="width:32px;height:32px;border-radius:50%;object-fit:cover" />
-                <span class="info-text">已设置</span>
-              </span>
-              <span v-else class="info-text">未设置</span>
-            </el-descriptions-item>
             <el-descriptions-item label="角色">
               <el-tag :type="isRoot ? 'danger' : 'info'" size="small">{{ isRoot ? '管理员' : '普通用户' }}</el-tag>
             </el-descriptions-item>
@@ -194,5 +199,16 @@ const handleChangeName = async () => {
 .form-card { padding: 20px 0; }
 
 .info-text { font-size: 14px; color: #6b7280; }
+
+/* 个人信息头部 */
+.profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 4px; }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+.profile-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-letter {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 28px; font-weight: 700;
+}
+.profile-names { display: flex; flex-direction: column; gap: 6px; }
+.profile-username { font-size: 20px; font-weight: 700; color: #1f2937; }
 
 </style>
