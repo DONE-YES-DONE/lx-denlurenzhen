@@ -691,14 +691,14 @@ onBeforeUnmount(() => { window.removeEventListener('resize', onResize); chartIns
 .card-meta { display: flex; gap: 14px; font-size: 12px; color: #6b7280; }
 .card-meta i { color: #94a3b8; margin-right: 3px; font-size: 10px; }
 
-.card-params { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; background: #f8fafc; border-radius: 8px; padding: 10px 12px; }
+.card-params { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; background: #eff6ff; border-radius: 8px; padding: 10px 12px; }
 .card-param { display: flex; justify-content: space-between; font-size: 12px; }
 .param-key { color: #9ca3af; }
 .param-val { color: #1f2937; font-weight: 600; }
 
 .card-footer { display: flex; justify-content: space-between; align-items: center; }
 .card-confidence { font-size: 12px; color: #6366f1; font-weight: 600; }
-.card-hint { font-size: 11px; color: #cbd5e1; transition: color 0.2s; }
+.card-hint { font-size: 11px; color: #93c5fd; transition: color 0.2s; }
 .batch-card:hover .card-hint { color: #6366f1; }
 
 /* ===== 分页 ===== */
