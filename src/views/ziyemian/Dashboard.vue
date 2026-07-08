@@ -494,8 +494,8 @@ function renderBatchCharts() {
       symbol: 'none',
       lineStyle: { type: 'dashed', width: 1.5 },
       data: [
-        { yAxis: range.min, name: '下限', label: { formatter: `下限 ${range.min}`, position: 'start', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
-        { yAxis: range.max, name: '上限', label: { formatter: `上限 ${range.max}`, position: 'end', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
+        { yAxis: range.min, name: '下限', label: { formatter: `下限 ${range.min}`, position: 'start', distance: [12, 0], fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
+        { yAxis: range.max, name: '上限', label: { formatter: `上限 ${range.max}`, position: 'end', distance: [-12, 0], fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
       ]
     }
 
