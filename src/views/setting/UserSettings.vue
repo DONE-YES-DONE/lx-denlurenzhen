@@ -164,7 +164,7 @@ const handleChangeName = async () => {
     if (!valid) return
     nameLoading.value = true
     try {
-      const res = await requestUser.put('/username', { userName: nameForm.userName })
+      const res = await requestUser.put('/username', null, { params: { username: nameForm.userName } })
       if (res.data?.code === 200) {
         ElMessage.success('用户名修改成功')
         nameFormRef.value.resetFields()
