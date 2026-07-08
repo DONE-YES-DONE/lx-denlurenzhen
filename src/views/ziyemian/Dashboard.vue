@@ -356,22 +356,26 @@ const loadChartData = async () => {
   }
 }
 // ==================== 图表渲染
-const comboOption = () => ({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-  legend: { data: ['合格率', '合格数量', '不合格数量'], right: 20, top: 0, textStyle: { fontSize: 12 } },
-  grid: { left: '8%', right: '6%', bottom: '8%', top: '22%', containLabel: true },
-  dataZoom: [{ type: 'slider', start: 0, end: 100, bottom: 6, height: 20, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } }],
-  xAxis: { type: 'category', data: qualityData.value.dates, axisLine: { lineStyle: { color: '#e5e7eb' } }, axisTick: { show: false } },
-  yAxis: [
-    { type: 'value', axisLabel: { color: '#6b7280' }, splitLine: { lineStyle: { color: '#f3f4f6' } } },
-    { type: 'value', min: 80, max: 100, axisLabel: { color: '#6b7280', formatter: '{value}%' }, splitLine: { show: false } }
-  ],
-  series: [
-    { name: '合格数量', type: 'bar', yAxisIndex: 0, barWidth: '40%', barGap: '30%', data: qualityData.value.passCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4ade80' }, { offset: 1, color: '#22c55e' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
-    { name: '不合格数量', type: 'bar', yAxisIndex: 0, barWidth: '40%', data: qualityData.value.failCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#fca5a5' }, { offset: 1, color: '#ef4444' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
-    { name: '合格率', type: 'line', yAxisIndex: 1, smooth: true, symbol: 'emptyCircle', symbolSize: 8, data: passRateData.value.passRates, lineStyle: { color: '#6366f1', width: 3 }, itemStyle: { color: '#6366f1', borderWidth: 2 }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(99,102,241,0.25)' }, { offset: 1, color: 'rgba(99,102,241,0.02)' }]) }, label: { show: true, position: 'top', distance: 12, color: '#6366f1', fontWeight: 'bold', fontSize: 10, formatter: '{c}%' } }
-  ]
-})
+const comboOption = () => {
+  const count = passRateData.value.passRates.length
+  const hasEnough = count >= 3
+  return {
+    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+    legend: { data: ['合格率', '合格数量', '不合格数量'], right: 20, top: 0, textStyle: { fontSize: 12 } },
+    grid: { left: '8%', right: '6%', bottom: '8%', top: '22%', containLabel: true },
+    dataZoom: count > 0 ? [{ type: 'slider', start: 0, end: 100, bottom: 6, height: 20, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } }] : [],
+    xAxis: { type: 'category', data: qualityData.value.dates, axisLine: { lineStyle: { color: '#e5e7eb' } }, axisTick: { show: false } },
+    yAxis: [
+      { type: 'value', axisLabel: { color: '#6b7280' }, splitLine: { lineStyle: { color: '#f3f4f6' } } },
+      { type: 'value', axisLabel: { color: '#6b7280', formatter: '{value}%' }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: '合格数量', type: 'bar', yAxisIndex: 0, barWidth: '40%', barGap: '30%', data: qualityData.value.passCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4ade80' }, { offset: 1, color: '#22c55e' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
+      { name: '不合格数量', type: 'bar', yAxisIndex: 0, barWidth: '40%', data: qualityData.value.failCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#fca5a5' }, { offset: 1, color: '#ef4444' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
+      { name: '合格率', type: 'line', yAxisIndex: 1, smooth: hasEnough, symbol: hasEnough ? 'emptyCircle' : 'circle', symbolSize: hasEnough ? 8 : 6, data: passRateData.value.passRates, lineStyle: { color: '#6366f1', width: 3 }, itemStyle: { color: '#6366f1', borderWidth: 2 }, areaStyle: hasEnough ? { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(99,102,241,0.25)' }, { offset: 1, color: 'rgba(99,102,241,0.02)' }]) } : undefined, label: { show: true, position: 'top', distance: 12, color: '#6366f1', fontWeight: 'bold', fontSize: 10, formatter: '{c}%' } }
+    ]
+  }
+}
 
 // 初始化 / 刷新
 function renderCombo() {
