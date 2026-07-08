@@ -40,8 +40,8 @@ export default {
   //根据用户id查询用户信息
   async selectuserdate(userId){
     try{
-      // GET /api/user?id=xxx 带用户ID参数
-      const axiosResponse = await requestUser.get('/', { params: { id: userId } })
+      // GET /api/user 不带参数，后端通过 token 识别用户
+      const axiosResponse = await requestUser.get('')
       return axiosResponse.data
     }catch(error){
       console.log('查询失败',error.response?.data);
