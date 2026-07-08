@@ -356,10 +356,18 @@ const buildTableParams = () => {
   return params
 }
 
+const hasFilters = () => {
+  const f = filters.value
+  return !!(f.batchNo || f.deviceId || f.scenarioCode || f.responsiblePerson || f.modelEvaluationResult || f.dateRange?.length)
+}
+
 const loadTableData = async () => {
   tableLoading.value = true
   try {
-    const res = await wireMaterialApi.selectWireList(currentPage.value, pageSize.value)
+    const useConditional = hasFilters()
+    const res = useConditional
+      ? await wireMaterialApi.selectWirePage(buildTableParams())
+      : await wireMaterialApi.selectWireList(currentPage.value, pageSize.value)
     const p = res.data ?? res
     const records = p.records || []
     tableData.value = records.map(r => ({
