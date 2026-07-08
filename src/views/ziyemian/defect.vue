@@ -317,8 +317,13 @@ const loadBatches = async () => {
 
 const handleViewImages = (row) => {
   drawerRow.value = row
-  const url = row.imgUrl || row.img_url || ''
-  drawerImages.value = url ? url.split(',').map(u => u.trim()).filter(Boolean) : []
+  // 兼容数组 imgUrls 和逗号分隔字符串 imgUrl
+  if (Array.isArray(row.imgUrls) && row.imgUrls.length) {
+    drawerImages.value = row.imgUrls
+  } else {
+    const url = row.imgUrl || row.img_url || row.imgUrls || ''
+    drawerImages.value = typeof url === 'string' ? url.split(',').map(u => u.trim()).filter(Boolean) : []
+  }
   activeIndex.value = 0
   drawerVisible.value = true
 }
