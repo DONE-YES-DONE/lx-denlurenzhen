@@ -42,7 +42,7 @@
         <el-table-column label="线材类型" width="100" align="center">
           <template #default="{ row }">
             <template v-if="row.scenarioCode">
-              <span class="scenario-tag tag-wire">{{ row.wireType }}</span>
+              <span class="scenario-tag" :class="wireTagClass(row.wireType)">{{ row.wireType }}</span>
             </template>
           </template>
         </el-table-column>
@@ -137,7 +137,7 @@
       <el-descriptions :column="2" border>
         <el-descriptions-item label="场景编号">{{ currentRow.scenarioCode }}</el-descriptions-item>
         <el-descriptions-item label="场景名称">{{ currentRow.scenarioName }}</el-descriptions-item>
-        <el-descriptions-item label="线材类型"><span class="scenario-tag tag-wire">{{ currentRow.wireType }}</span></el-descriptions-item>
+        <el-descriptions-item label="线材类型"><span class="scenario-tag" :class="wireTagClass(currentRow.wireType)">{{ currentRow.wireType }}</span></el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ currentRow.createTime }}</el-descriptions-item>
         <el-descriptions-item label="电导率">{{ currentRow.conductivityMin }} ~ {{ currentRow.conductivityMax }}</el-descriptions-item>
         <el-descriptions-item label="延展率(%)">{{ currentRow.extensibilityMin }} ~ {{ currentRow.extensibilityMax }}</el-descriptions-item>
@@ -217,6 +217,9 @@ const handlePageChange = (page) => { currentPage.value = page; loadData().then((
 
 const sortOrder = ref('desc')
 const toggleSort = () => { sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'; sortData() }
+
+const WIRE_TAG_CLASS = { Cu: 'tag-cu', Al: 'tag-al', Ni: 'tag-ni', Ti: 'tag-ti', Zn: 'tag-zn' }
+const wireTagClass = (type) => WIRE_TAG_CLASS[type] || 'tag-wire'
 const sortData = () => {
   const rows = tableData.value.filter(r => r.scenarioCode)
   const empty = tableData.value.filter(r => !r.scenarioCode)
@@ -298,7 +301,11 @@ onMounted(() => loadData())
 
 /* 标签 */
 .scenario-tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-.tag-wire { background: #eff6ff; color: #3b82f6; }
+.tag-cu { background: #fff7ed; color: #c2410c; } /* 铜丝 — copper orange */
+.tag-al { background: #f3f4f6; color: #6b7280; } /* 铝丝 — silver gray */
+.tag-ni { background: #f0f7f9; color: #4b7d8b; } /* 镍丝 — nickel steel */
+.tag-ti { background: #faf9f8; color: #57534e; } /* 钛丝 — titanium dark */
+.tag-zn { background: #eef3f8; color: #3b6e8f; } /* 锌丝 — zinc bluish */
 
 .action-btn { transition: all 0.2s; }
 .action-btn:hover { transform: scale(1.08); }
