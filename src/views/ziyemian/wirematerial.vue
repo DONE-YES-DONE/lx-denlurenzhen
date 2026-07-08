@@ -272,6 +272,13 @@
             <el-table-column prop="resistance" label="电导率(MS/m)" align="center" />
             <el-table-column prop="extensibility" label="延展率 (%)" align="center" />
             <el-table-column prop="weight" label="重量 (g)" align="center" />
+            <el-table-column label="结果" width="90" align="center">
+              <template #default="{ row }">
+                <span class="device-tag" :class="RESULT_TAG_CLASS[row.modelEvaluationResult] || 'tag-unknown'">
+                  <span class="device-dot"></span>{{ RESULT_MAP[row.modelEvaluationResult] || '—' }}
+                </span>
+              </template>
+            </el-table-column>
             <el-table-column prop="scenarioCode" label="场景" width="80" align="center" />
           </el-table>
         </div>
@@ -498,7 +505,9 @@ const openBatch = async (batch) => {
         resistance: r.resistance,
         extensibility: r.extensibility,
         weight: r.weight,
-        scenarioCode: r.scenarioCode
+        scenarioCode: r.scenarioCode,
+        modelEvaluationResult: r.modelEvaluationResult,
+        evaluationMessage: r.evaluationMessage
       }))
     } catch (e) {
       console.error('卷数据加载失败', e)
