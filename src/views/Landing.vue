@@ -12,7 +12,7 @@
             >
           </div>
           <div class="brand-text">
-            <span class="brand-title">微细线材云智检</span>
+            <span class="brand-title">金属线材综合抽检平台</span>
             <span class="brand-subtitle">Metal Wire Inspection</span>
           </div>
         </div>
@@ -516,7 +516,7 @@
             <div class="logo-icon">
               <i class="fas fa-crosshairs"></i>
             </div>
-            <span class="logo-text">微细线材云智检</span>
+            <span class="logo-text">金属线材综合抽检平台</span>
           </div>
           <p class="brand-desc">专业的金属微细线材综合检测平台，为您的产品质量保驾护航。</p>
           <div class="social-links">
@@ -572,7 +572,7 @@
       </div>
       
       <div class="footer-bottom">
-        <p>© 2026 微细线材云智检平台. 保留所有权利.</p>
+        <p>© 2026 金属线材综合抽检平台平台. 保留所有权利.</p>
         <div class="legal-links">
           <a href="#">隐私政策</a>
           <a href="#">服务条款</a>

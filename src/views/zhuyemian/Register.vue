@@ -27,7 +27,7 @@
             </div>
           </div>
           <h1 class="brand-title">创建账户</h1>
-          <p class="brand-subtitle">加入微细线材云智检平台</p>
+          <p class="brand-subtitle">加入金属线材综合抽检平台平台</p>
         </div>
         
         <!-- 注册优势 -->

@@ -24,7 +24,7 @@
         </div>
         <div class="qr-url-hint" v-if="isMobile">
           <i class="fas fa-link"></i>
-          {{ baseUrl }}/qr/batchNo={{ data.batchNo }}/rollNo={{ data.rollNo }}
+          {{ baseUrl }}/qr/{{ data.batchNo }}/{{ data.rollNo }}
         </div>
       </div>
 
