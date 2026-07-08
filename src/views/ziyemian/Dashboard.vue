@@ -363,8 +363,8 @@ const comboOption = () => ({
   dataZoom: [{ type: 'slider', start: 0, end: 100, bottom: 6, height: 20, borderColor: 'transparent', backgroundColor: '#f3f4f6', fillerColor: 'rgba(99,102,241,0.2)', handleStyle: { color: '#6366f1' }, textStyle: { fontSize: 10, color: '#6b7280' } }],
   xAxis: { type: 'category', data: qualityData.value.dates, axisLine: { lineStyle: { color: '#e5e7eb' } }, axisTick: { show: false } },
   yAxis: [
-    { type: 'value', name: '数量', nameTextStyle: { color: '#6b7280' }, axisLabel: { color: '#6b7280' }, splitLine: { lineStyle: { color: '#f3f4f6' } } },
-    { type: 'value', name: '合格率 (%)', min: 80, max: 100, nameTextStyle: { color: '#6b7280' }, axisLabel: { color: '#6b7280', formatter: '{value}%' }, splitLine: { show: false } }
+    { type: 'value', axisLabel: { color: '#6b7280' }, splitLine: { lineStyle: { color: '#f3f4f6' } } },
+    { type: 'value', min: 80, max: 100, axisLabel: { color: '#6b7280', formatter: '{value}%' }, splitLine: { show: false } }
   ],
   series: [
     { name: '合格数量', type: 'bar', yAxisIndex: 0, barWidth: '55%', data: qualityData.value.passCounts, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#4ade80' }, { offset: 1, color: '#22c55e' }]), borderRadius: [4, 4, 0, 0] }, label: { show: false } },
@@ -522,8 +522,7 @@ function renderBatchCharts() {
         axisLabel: { color: '#6b7280', fontSize: 11, interval: 0 }
       },
       yAxis: {
-        type: 'value', name: p.unit,
-        nameTextStyle: { color: '#6b7280', fontSize: 10 },
+        type: 'value',
         axisLabel: { color: '#6b7280', fontSize: 10 },
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       }

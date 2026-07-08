@@ -601,8 +601,7 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
       axisLabel: { color: '#6b7280', fontSize: 11, interval: 0 },
     },
     yAxis: {
-      type: 'value', name: unit,
-      nameTextStyle: { color: '#6b7280', fontSize: 10 },
+      type: 'value',
       axisLabel: { color: '#6b7280', fontSize: 10 },
       splitLine: { lineStyle: { color: '#f3f4f6' } }
     },
