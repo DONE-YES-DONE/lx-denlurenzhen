@@ -226,8 +226,17 @@
           </div>
         </div>
 
-        <!-- 4 张图表 2×2 -->
-        <div v-if="activeBatch.rolls && activeBatch.rolls.length" class="charts-2x2">
+        <!-- 图表类型切换 + 4 张图表 2×2 -->
+        <div v-if="activeBatch.rolls && activeBatch.rolls.length" class="charts-area">
+          <div class="chart-type-toggle">
+            <button :class="['type-btn', { active: chartType === 'line' }]" @click="switchChartType('line')">
+              <i class="fas fa-chart-line"></i> 折线图
+            </button>
+            <button :class="['type-btn', { active: chartType === 'bar' }]" @click="switchChartType('bar')">
+              <i class="fas fa-chart-bar"></i> 柱状图
+            </button>
+          </div>
+          <div class="charts-2x2">
           <div class="detail-chart-card">
             <div class="detail-chart-title">直径 (mm)</div>
             <div ref="diameterChartRef" class="detail-chart"></div>
@@ -244,6 +253,7 @@
             <div class="detail-chart-title">电导率 (MS/m)</div>
             <div ref="resistanceChartRef" class="detail-chart"></div>
           </div>
+        </div>
         </div>
 
         <!-- 卷数据表格 -->
@@ -401,6 +411,9 @@ const toggleSort = () => {
 
 const headerCellStyle = { background: '#1e293b', color: '#f1f5f9', fontWeight: 600, fontSize: '13px', border: 'none' }
 
+// 图表类型切换
+const chartType = ref('line') // 'line' | 'bar'
+
 const confidencePct = (val) => {
   if (val == null) return 0
   // modelConfidence 是 0~1 的小数，转为百分比
@@ -532,7 +545,7 @@ const CHART_COLORS = {
   weight:       ['#f472b6', '#ec4899']
 }
 
-const buildChartOption = (title, rolls, key, unit) => {
+const buildChartOption = (title, rolls, key, unit, type = 'line') => {
   const values = rolls.map(r => r[key])
   const xData = rolls.map(r => '卷' + r.rollNo)
   const range = stdRanges.value?.[key]
@@ -578,41 +591,58 @@ const buildChartOption = (title, rolls, key, unit) => {
       axisLabel: { color: '#6b7280', fontSize: 10 },
       splitLine: { lineStyle: { color: '#f3f4f6' } }
     },
-    series: [{
-      type: 'bar',
-      barWidth: '55%',
-      data: values.map(v => {
-        let color
-        if (range) {
-          const devBelow = range.min != null ? Math.max(0, range.min - v) / Math.abs(range.min || 1) : 0
-          const devAbove = range.max != null ? Math.max(0, v - range.max) / Math.abs(range.max || 1) : 0
-          const ratio = Math.min(1, devBelow + devAbove) // 0=合格, 越大越不合格
-          if (ratio <= 0.01) {
-            color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: '#86efac' }, { offset: 1, color: '#22c55e' }
-            ])
-          } else {
-            const r = Math.round(239 - ratio * 40)  // 239→199
-            const g = Math.round(68 - ratio * 50)    // 68→18
-            const b = Math.round(68 - ratio * 50)    // 68→18
-            color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: `rgb(${r + 16},${g + 10},${b + 10})` },
-              { offset: 1, color: `rgb(${r},${g},${b})` }
-            ])
-          }
-        } else {
-          color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#86efac' }, { offset: 1, color: '#22c55e' }
-          ])
-        }
+    series: [(() => {
+      if (type === 'bar') {
         return {
-          value: v,
-          itemStyle: { color, borderRadius: [4, 4, 0, 0] }
+          type: 'bar',
+          barWidth: '55%',
+          data: values.map(v => {
+            let color
+            if (range) {
+              const devBelow = range.min != null ? Math.max(0, range.min - v) / Math.abs(range.min || 1) : 0
+              const devAbove = range.max != null ? Math.max(0, v - range.max) / Math.abs(range.max || 1) : 0
+              const ratio = Math.min(1, devBelow + devAbove)
+              if (ratio <= 0.01) {
+                color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#86efac' }, { offset: 1, color: '#22c55e' }
+                ])
+              } else {
+                const r = Math.round(239 - ratio * 40)
+                const g = Math.round(68 - ratio * 50)
+                const b = Math.round(68 - ratio * 50)
+                color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: `rgb(${r + 16},${g + 10},${b + 10})` },
+                  { offset: 1, color: `rgb(${r},${g},${b})` }
+                ])
+              }
+            } else {
+              color = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: '#86efac' }, { offset: 1, color: '#22c55e' }
+              ])
+            }
+            return { value: v, itemStyle: { color, borderRadius: [4, 4, 0, 0] } }
+          }),
+          markLine
         }
-      }),
-      markLine
-    }]
+      }
+      return {
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 7,
+        lineStyle: { width: 2, color: '#6366f1' },
+        itemStyle: { color: '#6366f1', borderColor: '#fff', borderWidth: 2 },
+        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(99,102,241,0.15)' }, { offset: 1, color: 'rgba(99,102,241,0.0)' }]) },
+        data: values,
+        markLine
+      }
+    })()]
   }
+}
+
+const switchChartType = (type) => {
+  chartType.value = type
+  nextTick(() => { renderAllCharts() })
 }
 
 function renderAllCharts() {
@@ -631,7 +661,7 @@ function renderAllCharts() {
     if (!r.ref.value) return
     const instance = echarts.init(r.ref.value)
     chartInstances.push(instance)
-    instance.setOption(buildChartOption(titles[i], batch.rolls, r.key, r.unit))
+    instance.setOption(buildChartOption(titles[i], batch.rolls, r.key, r.unit, chartType.value))
   })
 }
 
@@ -751,7 +781,12 @@ onBeforeUnmount(() => { window.removeEventListener('resize', onResize); chartIns
 .detail-alert i { font-size: 16px; }
 
 /* 2×2 图表 */
-.charts-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.charts-area { margin-bottom: 18px; }
+.chart-type-toggle { display: flex; gap: 4px; background: #f1f5f9; border-radius: 8px; padding: 3px; width: fit-content; margin-bottom: 14px; }
+.type-btn { height: 30px; padding: 0 14px; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: #94a3b8; font-size: 13px; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.type-btn:hover { color: #6366f1; }
+.type-btn.active { background: white; color: #6366f1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
+.charts-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .detail-chart-card { background: #f8fafc; border-radius: 12px; padding: 14px 16px; border: 1px solid #e5e7eb; }
 .detail-chart-title { font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 8px; }
 .detail-chart { width: 100%; height: 250px; }
