@@ -188,7 +188,7 @@ const handleChangeName = async () => {
 .profile-username { font-size: 18px; font-weight: 700; color: #1f2937; }
 
 /* 双列 */
-.settings-grid { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
 .settings-card { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; }
 .card-title { font-size: 15px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; }
 .card-title i { color: #6366f1; font-size: 14px; width: 20px; text-align: center; }
