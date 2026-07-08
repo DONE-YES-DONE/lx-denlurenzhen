@@ -251,14 +251,18 @@ const authStore = useAuthStore()
 const userName = computed(() => authStore.userDate?.userName || '')
 const indicatorRef = ref(null)
 
-// 头像字母：管理员(R)，普通用户(U)
+// 头像字母：取用户名的首字符，无数据时默认 'U'
 const avatarLetter = computed(() => {
-  const u = authStore.userDate
-  if (!u) return 'U'
-  return (u.roleId == 1 || u.role_id == 1 || u.role == 1) ? 'R' : 'U'
+  const name = authStore.userDate?.userName || ''
+  return name ? name.charAt(0).toUpperCase() : 'U'
 })
-// 用户自定义头像
-const userAvatar = computed(() => authStore.userDate?.avatarUrl || '')
+// 用户头像：优先用后端返回的 avatarUrl，否则用 ui-avatars 生成首字母头像
+const userAvatar = computed(() => {
+  const url = authStore.userDate?.avatarUrl
+  if (url) return url
+  const name = authStore.userDate?.userName || 'User'
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=64&bold=true`
+})
 // 是否管理员
 const isAdmin = computed(() => {
   const u = authStore.userDate
