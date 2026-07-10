@@ -15,7 +15,7 @@
           <span class="brand-name">金属线材综合抽检平台</span>
         </div>
 
-        <!-- 中间导航菜单 -->
+        <!-- 中间导航菜单（桌面端） -->
         <nav class="nav-menu" @mouseleave="resetIndicator">
           <router-link
             v-for="item in menuItems"
@@ -28,7 +28,6 @@
           >
             {{ item.name }}
           </router-link>
-          <!-- 滑动指示器 -->
           <div class="nav-indicator" ref="indicatorRef"></div>
         </nav>
 
@@ -40,7 +39,7 @@
             <span v-if="msgBadge > 0" class="notify-badge">{{ msgBadge > 99 ? '99+' : msgBadge }}</span>
           </div>
 
-          <!-- 用户信息下拉（悬停式，带延迟关闭） -->
+          <!-- 用户信息下拉（桌面端） -->
           <div class="user-dropdown" @mouseenter="showDropdownMenu" @mouseleave="hideDropdownMenu">
             <div class="user-info">
               <div class="user-avatar">
@@ -56,21 +55,42 @@
               </div>
               <i class="fas fa-chevron-down dropdown-arrow" :class="{ rotated: showDropdown }"></i>
             </div>
-
-            <!-- 下拉菜单 -->
             <div class="dropdown-menu" v-show="showDropdown">
               <div class="dropdown-item" @click="showDropdown = false; router.push('/home/settings')">
-                <i class="fas fa-user-cog"></i>
-                用户设置
+                <i class="fas fa-user-cog"></i>用户设置
               </div>
               <div class="dropdown-item" @click="handleLogout">
-                <i class="fas fa-sign-out-alt"></i>
-                退出登录
+                <i class="fas fa-sign-out-alt"></i>退出登录
               </div>
             </div>
           </div>
+
+          <!-- 移动端汉堡按钮 -->
+          <button class="hamburger-btn" @click="mobileMenuOpen = !mobileMenuOpen" :class="{ open: mobileMenuOpen }">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </div>
+
+      <!-- 移动端下拉菜单 -->
+      <transition name="mobile-slide">
+        <div v-if="mobileMenuOpen" class="mobile-menu" @click.self="mobileMenuOpen = false">
+          <router-link v-for="item in menuItems" :key="item.path" :to="item.path" class="mobile-nav-item" :class="{ active: activeMenu === item.path }" @click="handleClick(item.path); mobileMenuOpen = false">
+            {{ item.name }}
+          </router-link>
+          <div class="mobile-menu-divider"></div>
+          <div class="mobile-menu-user">
+            <span class="mobile-user-name">{{ userName }}</span>
+            <el-tag :type="isAdmin ? 'danger' : ''" size="small">{{ isAdmin ? '管理员' : '普通用户' }}</el-tag>
+          </div>
+          <div class="mobile-nav-item" @click="router.push('/home/settings'); mobileMenuOpen = false">
+            <i class="fas fa-user-cog"></i> 用户设置
+          </div>
+          <div class="mobile-nav-item logout" @click="handleLogout">
+            <i class="fas fa-sign-out-alt"></i> 退出登录
+          </div>
+        </div>
+      </transition>
     </header>
 
     <!-- 预警消息半拉框 -->
@@ -349,6 +369,7 @@ const handleClick = (path) => {
 
 // ==================== 用户下拉菜单（悬停式，延迟关闭） ====================
 const showDropdown = ref(false)
+const mobileMenuOpen = ref(false)
 const closeTimer = ref(null) // 关闭的延迟定时器
 
 // 鼠标移入用户区域：立即显示，并清除可能等待的关闭定时器
@@ -908,5 +929,34 @@ onBeforeUnmount(() => {
 
 .msg-empty { text-align: center; padding: 60px 0; color: #9ca3af; }
 .msg-empty i { font-size: 36px; display: block; margin-bottom: 12px; }
+
+/* ========== 移动端响应式 ========== */
+.hamburger-btn { display: none; flex-direction: column; justify-content: center; gap: 4px; width: 36px; height: 36px; background: none; border: none; cursor: pointer; padding: 6px; z-index: 1001; }
+.hamburger-btn span { display: block; height: 2px; background: #4b5563; border-radius: 2px; transition: all 0.3s; }
+.hamburger-btn.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; }
+.hamburger-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+.mobile-menu { display: none; position: absolute; top: 60px; left: 0; right: 0; background: white; box-shadow: 0 8px 20px rgba(0,0,0,0.12); padding: 8px 0; z-index: 1000; }
+.mobile-nav-item { display: flex; align-items: center; gap: 8px; padding: 12px 24px; font-size: 15px; color: #374151; text-decoration: none; cursor: pointer; transition: background 0.15s; }
+.mobile-nav-item:hover { background: #f3f4f6; }
+.mobile-nav-item.active { color: #6366f1; background: #eff6ff; font-weight: 600; }
+.mobile-nav-item.logout { color: #ef4444; }
+.mobile-menu-divider { height: 1px; background: #e5e7eb; margin: 4px 16px; }
+.mobile-menu-user { display: flex; align-items: center; gap: 8px; padding: 8px 24px; }
+.mobile-user-name { font-size: 14px; font-weight: 600; color: #1f2937; }
+.mobile-slide-enter-active { transition: all 0.25s ease; }
+.mobile-slide-leave-active { transition: all 0.2s ease; }
+.mobile-slide-enter-from { opacity: 0; transform: translateY(-8px); }
+.mobile-slide-leave-to { opacity: 0; transform: translateY(-8px); }
+
+@media (max-width: 768px) {
+  .hamburger-btn { display: flex; }
+  .mobile-menu { display: block; }
+  .nav-menu { display: none; }
+  .user-detail { display: none; }
+  .brand-name { display: none; }
+  .header-inner { padding: 0 12px; }
+}
 
 </style>
