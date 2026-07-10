@@ -339,4 +339,9 @@ onMounted(() => loadData())
   animation: shimmer 1.8s ease-in-out infinite;
 }
 @keyframes shimmer { 100% { left: 100%; } }
+
+@media (max-width: 768px) {
+  .filter-row { flex-wrap: wrap; }
+  .filter-select, .filter-input { width: 100%; flex: auto; }
+}
 </style>

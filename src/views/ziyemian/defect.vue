@@ -479,4 +479,12 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKeyDown) })
 .lightbox-info-item span:last-child { font-weight: 600; color: #e2e8f0; }
 .lightbox-info-div { height: 1px; background: rgba(255,255,255,0.06); }
 .info-conf { color: #4ade80 !important; }
+
+@media (max-width: 768px) {
+  .filter-row { flex-wrap: wrap; }
+  .filter-input { width: 100%; flex: auto; }
+  .drawer-split { flex-direction: column; }
+  .file-list-panel { width: 100%; max-height: 200px; border-right: none; border-bottom: 1px solid #e5e7eb; }
+  .lightbox-info { display: none; }
+}
 </style>

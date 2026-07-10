@@ -776,7 +776,7 @@ onBeforeUnmount(() => {
 .mini-chart { width: 100%; height: 240px; }
 
 @media (max-width: 1200px) { .stats-cards { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } .batch-charts-2x2 { grid-template-columns: 1fr; } }
-@media (max-width: 768px) { .stats-cards { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .stats-cards { grid-template-columns: 1fr; } .combo-chart { height: 300px; } .mini-chart { height: 200px; } .defect-chart { height: 220px; } }
 
 .raw-data-box {
   background: #f5f7fa;

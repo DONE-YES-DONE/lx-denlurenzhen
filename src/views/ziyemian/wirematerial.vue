@@ -871,5 +871,5 @@ onBeforeUnmount(() => { window.removeEventListener('resize', onResize); chartIns
 
 /* ===== 响应式 ===== */
 @media (max-width: 1200px) { .card-grid { grid-template-columns: repeat(2, 1fr); } .charts-2x2 { grid-template-columns: 1fr; } }
-@media (max-width: 768px)  { .card-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px)  { .card-grid { grid-template-columns: 1fr; } .filter-row { flex-wrap: wrap; } .filter-input, .filter-sm { width: 100%; flex: auto; } }
 </style>

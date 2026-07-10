@@ -291,4 +291,9 @@ onMounted(() => { scrollBtm() })
 .md-md :deep(li) { margin: 2px 0; }
 .user-bubble .md-md :deep(.md-pre) { background: rgba(0,0,0,.25); }
 .user-bubble .md-md :deep(.md-code) { background: rgba(0,0,0,.2); color: #ffccd5; }
+
+@media (max-width: 768px) {
+  .md-sidebar { display: none; }
+  .md-chat { padding: 12px; }
+}
 </style>
