@@ -144,6 +144,7 @@
         <el-table-column label="重量 (g)" width="100" align="center">
           <template #default="{ row }">{{ row.weight }}</template>
         </el-table-column>
+        <el-table-column prop="productionMachine" label="生产设备" width="110" align="center" />
         <el-table-column label="置信度" width="110" align="center">
           <template #default="{ row }">
             <template v-if="row.modelConfidence != null">
@@ -208,10 +209,9 @@
         <el-descriptions-item label="重量">{{ currentRow.weight }} g</el-descriptions-item>
         <el-descriptions-item label="置信度">{{ currentRow.modelConfidence }}</el-descriptions-item>
         <el-descriptions-item label="评估" :span="2">{{ currentRow.evaluationMessage || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="生产商">{{ currentRow.manufacturer }}</el-descriptions-item>
+        <el-descriptions-item label="生产设备">{{ currentRow.productionMachine }}</el-descriptions-item>
         <el-descriptions-item label="负责人">{{ currentRow.responsiblePerson }}</el-descriptions-item>
         <el-descriptions-item label="工艺类型">{{ currentRow.processType }}</el-descriptions-item>
-        <el-descriptions-item label="生产机器">{{ currentRow.productionMachine }}</el-descriptions-item>
         <el-descriptions-item label="时间" :span="2">{{ currentRow.createTime }}</el-descriptions-item>
       </el-descriptions>
       <template #footer><el-button type="primary" @click="viewVisible = false">关闭</el-button></template>
@@ -460,10 +460,10 @@ const handleExport = () => {
   if (!rows.length) { ElMessage.warning('没有可导出的数据'); return }
   const cols = viewMode.value === 'card'
     ? ['batchNo','scenarioCode','diameter','resistance','extensibility','weight']
-    : ['batchNo','rollNo','deviceId','scenarioCode','diameter','resistance','extensibility','weight','manufacturer','responsiblePerson','evaluationMessage','createTime']
+    : ['batchNo','rollNo','deviceId','scenarioCode','diameter','resistance','extensibility','weight','productionMachine','responsiblePerson','evaluationMessage','createTime']
   const labels = viewMode.value === 'card'
     ? ['批次号','场景','直径(mm)','电导率(MS/m)','延展率(%)','重量(g)']
-    : ['批次号','卷序','设备ID','场景','直径(mm)','电导率(MS/m)','延展率(%)','重量(g)','生产商','负责人','评估','检测时间']
+    : ['批次号','卷序','设备ID','场景','直径(mm)','电导率(MS/m)','延展率(%)','重量(g)','生产设备','负责人','评估','检测时间']
   const csv = [labels.join(',')]
   rows.forEach(r => csv.push(cols.map(c => { const v = r[c]; return v != null ? `"${String(v).replace(/"/g,'""')}"` : '' }).join(',')))
   const blob = new Blob(['﻿' + csv.join('\n')], { type: 'text/csv;charset=utf-8' })
