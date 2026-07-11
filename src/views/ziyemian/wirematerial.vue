@@ -365,10 +365,12 @@ const loadTableData = async () => {
   tableLoading.value = true
   try {
     const useConditional = hasFilters()
+    console.log(`🔍 [表格分页] 接口: ${useConditional ? '/page' : '/list'}`, '当前页:', currentPage.value, '页大小:', pageSize.value)
     const res = useConditional
       ? await wireMaterialApi.selectWirePage(buildTableParams())
       : await wireMaterialApi.selectWireList(currentPage.value, pageSize.value)
     const p = res.data ?? res
+    console.log('🔍 [表格分页] 返回:', 'total:', p.total, 'records:', p.records?.length, '第一条:', JSON.stringify(p.records?.[0]))
     const records = p.records || []
     tableData.value = records.map(r => ({
       ...r,
