@@ -110,20 +110,20 @@
         </el-form-item>
         <el-divider content-position="left">检测标准</el-divider>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="电导率下限"><el-input-number v-model="form.conductivityMin" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
-          <el-col :span="12"><el-form-item label="电导率上限"><el-input-number v-model="form.conductivityMax" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="电导率下限"><el-input-number v-model="form.conductivityMin" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('conductivityMin','conductivityMax')" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="电导率上限"><el-input-number v-model="form.conductivityMax" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('conductivityMax','conductivityMin')" /></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="延展率下限(%)"><el-input-number v-model="form.extensibilityMin" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
-          <el-col :span="12"><el-form-item label="延展率上限(%)"><el-input-number v-model="form.extensibilityMax" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="延展率下限(%)"><el-input-number v-model="form.extensibilityMin" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('extensibilityMin','extensibilityMax')" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="延展率上限(%)"><el-input-number v-model="form.extensibilityMax" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('extensibilityMax','extensibilityMin')" /></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="重量下限(g)"><el-input-number v-model="form.weightMin" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
-          <el-col :span="12"><el-form-item label="重量上限(g)"><el-input-number v-model="form.weightMax" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="重量下限(g)"><el-input-number v-model="form.weightMin" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('weightMin','weightMax')" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="重量上限(g)"><el-input-number v-model="form.weightMax" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('weightMax','weightMin')" /></el-form-item></el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12"><el-form-item label="直径下限(mm)"><el-input-number v-model="form.diameterMin" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
-          <el-col :span="12"><el-form-item label="直径上限(mm)"><el-input-number v-model="form.diameterMax" :precision="2" :step="0.1" style="width: 100%;" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="直径下限(mm)"><el-input-number v-model="form.diameterMin" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('diameterMin','diameterMax')" /></el-form-item></el-col>
+          <el-col :span="12"><el-form-item label="直径上限(mm)"><el-input-number v-model="form.diameterMax" :precision="2" :step="0.1" style="width: 100%;" @change="syncRange('diameterMax','diameterMin')" /></el-form-item></el-col>
         </el-row>
       </el-form>
       <template #footer>
@@ -220,6 +220,17 @@ const toggleSort = () => { sortOrder.value = sortOrder.value === 'desc' ? 'asc' 
 
 const WIRE_TAG_CLASS = { Cu: 'tag-cu', Al: 'tag-al', Ni: 'tag-ni', Ti: 'tag-ti', Zn: 'tag-zn' }
 const wireTagClass = (type) => WIRE_TAG_CLASS[type] || 'tag-wire'
+
+// 上下限联动：下限>上限→上限同步；上限<下限→下限同步
+const syncRange = (changed, other) => {
+  if (form.value[changed] == null || form.value[other] == null) return
+  if (changed.endsWith('Min') && form.value[changed] > form.value[other]) {
+    form.value[other] = form.value[changed]
+  }
+  if (changed.endsWith('Max') && form.value[changed] < form.value[other]) {
+    form.value[other] = form.value[changed]
+  }
+}
 const sortData = () => {
   const rows = tableData.value.filter(r => r.scenarioCode)
   const empty = tableData.value.filter(r => !r.scenarioCode)
