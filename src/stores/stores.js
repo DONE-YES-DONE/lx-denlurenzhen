@@ -28,30 +28,26 @@ export const useAuthStore = defineStore('auth', () => {
     // GET /api/user 不带参数，后端通过 token 识别用户
     try {
       const res = await auth.selectuserdate()
-      console.log('🔍 [getuserdateandid] selectuserdate 返回:', JSON.stringify(res))
       if (res.code === 200 && res.data) {
         userDate.value = res.data
-        console.log('🔍 [getuserdateandid] userDate 已赋值:', JSON.stringify(userDate.value))
         return userDate.value
       }
     } catch (e) {
-      console.error('🔍 [getuserdateandid] selectuserdate 失败:', e)
+      console.error('获取用户信息失败:', e)
     }
 
     // 回退：调用 /me
     try {
       const res = await auth.selectuserId()
-      console.log('🔍 [getuserdateandid] selectuserId 回退:', JSON.stringify(res))
       if (res.code === 200 && res.data) {
         if (typeof res.data === 'string') {
           userDate.value = { userName: res.data, avatarUrl: '', roleId: res.data === 'Admin' ? 1 : 2 }
         } else {
           userDate.value = res.data
         }
-        console.log('🔍 [getuserdateandid] userDate(回退) 已赋值:', JSON.stringify(userDate.value))
       }
     } catch (e) {
-      console.error('🔍 [getuserdateandid] 获取用户信息完全失败:', e)
+      console.error('获取用户信息完全失败:', e)
     }
     return userDate.value
   }
