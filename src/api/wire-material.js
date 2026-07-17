@@ -1,13 +1,11 @@
 import { requestWire } from './requst';
 
-const parse = (d) => (typeof d === 'string' ? JSON.parse(d.replace(/:(\s*)(\d{16,})/g, ':"$2"')) : d)
-
 export default {
   // 分页查询线材列表
   async selectWireList(current, pageSize) {
     try {
       const res = await requestWire.get('/list', { params: { current, pageSize } })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('查询失败', error.response?.data)
       throw error
@@ -18,7 +16,7 @@ export default {
   async selectWirePage(params) {
     try {
       const res = await requestWire.get('/page', { params })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('条件分页查询失败', error.response?.data)
       throw error
@@ -29,7 +27,7 @@ export default {
   async queryWireList(filters) {
     try {
       const res = await requestWire.post('/list-agent', filters, { params: { limit: 200 } })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('条件查询失败', error.response?.data)
       throw error
@@ -73,7 +71,7 @@ export default {
   async selectBatchPage(params) {
     try {
       const res = await requestWire.get('/page-batch', { params })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('批次聚合查询失败', error.response?.data)
       throw error
@@ -84,7 +82,7 @@ export default {
   async selectBatchNoAvg(current = 1, pageSize = 12) {
     try {
       const res = await requestWire.get('/list-batchNoAvg', { params: { current, pageSize } })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('批次平均数据查询失败', error.response?.data)
       throw error
@@ -95,7 +93,7 @@ export default {
   async selectWirePhysical(batchNo) {
     try {
       const res = await requestWire.get('/list-batchNo', { params: batchNo != null ? { batchNo } : {} })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('物理参数查询失败', error.response?.data)
       throw error
@@ -106,7 +104,7 @@ export default {
   async selectWireInfoWithDetection(batchNo, rollNo) {
     try {
       const res = await requestWire.get('/info-with-detection', { params: { batchNo, rollNo } })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('溯源信息查询失败', error.response?.data)
       throw error
@@ -117,7 +115,7 @@ export default {
   async getEarlyWarning(status = 0, hours = 24) {
     try {
       const res = await requestWire.post('/early-warning', null, { params: { status, hours }, timeout: 180000 })
-      return parse(res.data)
+      return res.data
     } catch (error) {
       console.error('预警查询失败', error.response?.data)
       throw error

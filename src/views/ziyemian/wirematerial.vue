@@ -127,7 +127,7 @@
       >
         <el-table-column prop="batchNo" label="批号" width="110" align="center">
           <template #default="{ row }">
-            <span v-if="row.batchNo" class="table-batch-no">#{{ row.batchNo }}</span>
+            <span v-if="row.batchNo != null" class="table-batch-no">#{{ row.batchNo }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="rollNo" label="卷序" width="80" align="center" />
@@ -162,7 +162,7 @@
 
         <el-table-column label="结果" min-width="120" align="center">
           <template #default="{ row }">
-            <template v-if="row.batchNo">
+            <template v-if="row.batchNo != null">
               <span class="device-tag" :class="row.tagClass">
                 <span class="device-dot"></span>
                 {{ row.resultLabel }}
@@ -172,7 +172,7 @@
         </el-table-column>
         <el-table-column label="评估" min-width="170" align="center" show-overflow-tooltip>
           <template #default="{ row }">
-            <template v-if="row.batchNo">
+            <template v-if="row.batchNo != null">
               <span v-if="row.evaluationMessage" class="eval-text">{{ row.evaluationMessage }}</span>
               <span v-else class="text-muted">—</span>
             </template>
@@ -184,7 +184,7 @@
         </el-table-column>
         <el-table-column label="操作" width="100" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button v-if="row.batchNo" type="primary" link size="small" class="action-btn" @click.stop="handleView(row)"><i class="fas fa-eye"></i> 查看</el-button>
+            <el-button v-if="row.batchNo != null" type="primary" link size="small" class="action-btn" @click.stop="handleView(row)"><i class="fas fa-eye"></i> 查看</el-button>
           </template>
         </el-table-column>
       </el-table>

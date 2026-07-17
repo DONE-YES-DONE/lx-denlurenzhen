@@ -1,5 +1,13 @@
 import axios from 'axios'
 
+// 大整数保护：JSON.parse 前把 >=16 位数字转为字符串
+const bigIntTransform = (data) => {
+  if (typeof data === 'string') {
+    return JSON.parse(data.replace(/:(\s*)(\d{16,})/g, ':"$2"'))
+  }
+  return data
+}
+
 // 用户模块
 export const requestUser = axios.create({
   baseURL: '/api/user',
@@ -12,11 +20,11 @@ export const requestDevice = axios.create({
   timeout: 10000,
 })
 
-// 金属丝材料模块（text 响应防大整数精度丢失）
+// 金属丝材料模块（transformResponse 防大整数精度丢失）
 export const requestWire = axios.create({
   baseURL: '/api/wire-material',
   timeout: 10000,
-  responseType: 'text',
+  transformResponse: [bigIntTransform],
 })
 
 //应用管理模块
@@ -37,11 +45,11 @@ export const requestQuestion = axios.create({
   timeout: 300000,
 })
 
-// 缺陷检测模块（text 响应防大整数精度丢失）
+// 缺陷检测模块（transformResponse 防大整数精度丢失）
 export const requestDefect = axios.create({
   baseURL: '/api/detection-batch',
   timeout: 10000,
-  responseType: 'text',
+  transformResponse: [bigIntTransform],
 })
 
 // 给每个都加拦截器
