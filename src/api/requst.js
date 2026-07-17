@@ -12,10 +12,11 @@ export const requestDevice = axios.create({
   timeout: 10000,
 })
 
-// 金属丝材料模块
+// 金属丝材料模块（text 响应防大整数精度丢失）
 export const requestWire = axios.create({
   baseURL: '/api/wire-material',
   timeout: 10000,
+  responseType: 'text',
 })
 
 //应用管理模块
@@ -36,10 +37,11 @@ export const requestQuestion = axios.create({
   timeout: 300000,
 })
 
-// 缺陷检测模块
+// 缺陷检测模块（text 响应防大整数精度丢失）
 export const requestDefect = axios.create({
   baseURL: '/api/detection-batch',
   timeout: 10000,
+  responseType: 'text',
 })
 
 // 给每个都加拦截器

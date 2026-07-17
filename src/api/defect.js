@@ -1,17 +1,19 @@
 import { requestDefect } from './requst';
 
+const parse = (d) => (typeof d === 'string' ? JSON.parse(d.replace(/:(\s*)(\d{16,})/g, ':"$2"')) : d)
+
 export default {
   // 分页查询缺陷数据
   async selectDefectList(current, size = 10) {
     const res = await requestDefect.get('/list', { params: { current, size } })
-    return res.data
+    return parse(res.data)
   },
 
   // 根据批次号查询缺陷数据
   async selectDefectByBatch(batchNumber) {
     try {
       const res = await requestDefect.get(`/info/${batchNumber}`)
-      return res.data
+      return parse(res.data)
     } catch (error) {
       console.error('查询失败', error.response?.data)
       throw error
@@ -22,7 +24,7 @@ export default {
   async createDefect(data) {
     try {
       const res = await requestDefect.post('/', data)
-      return res.data
+      return parse(res.data)
     } catch (error) {
       console.error('创建失败（后端暂未实现该接口）', error.response?.data)
       throw error
@@ -33,7 +35,7 @@ export default {
   async updateDefect(id, data) {
     try {
       const res = await requestDefect.put(`/${id}`, data)
-      return res.data
+      return parse(res.data)
     } catch (error) {
       console.error('修改失败（后端暂未实现该接口）', error.response?.data)
       throw error
@@ -44,7 +46,7 @@ export default {
   async deleteDefect(id) {
     try {
       const res = await requestDefect.delete(`/${id}`)
-      return res.data
+      return parse(res.data)
     } catch (error) {
       console.error('删除失败（后端暂未实现该接口）', error.response?.data)
       throw error
