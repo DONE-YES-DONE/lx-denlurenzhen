@@ -1,13 +1,6 @@
 import { requestDefect } from './requst';
 
-const parse = (d) => {
-  if (typeof d === 'string') {
-    const result = JSON.parse(d.replace(/:(\s*)(\d{16,})/g, ':"$2"'))
-    console.log('🔍 defect parse 第一个batchNumber:', typeof result?.data?.records?.[0]?.batchNumber, result?.data?.records?.[0]?.batchNumber)
-    return result
-  }
-  return d
-}
+const parse = (d) => (typeof d === 'string' ? JSON.parse(d.replace(/:(\s*)(\d{16,})/g, ':"$2"')) : d)
 
 export default {
   // 分页查询缺陷数据
