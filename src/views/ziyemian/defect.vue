@@ -26,7 +26,7 @@
         style="width: 100%"
         :header-cell-style="headerCellStyle"
       >
-        <el-table-column prop="batchNumber" label="检测ID" width="220" align="center" show-overflow-tooltip />
+        <el-table-column prop="batchNumber" label="检测ID" width="300" align="center" show-overflow-tooltip />
         <el-table-column label="批号" width="100" align="center">
           <template #default="{ row }">{{ row.batchNo ?? '—' }}</template>
         </el-table-column>
