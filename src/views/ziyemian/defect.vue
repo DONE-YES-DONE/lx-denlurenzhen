@@ -26,7 +26,13 @@
         style="width: 100%"
         :header-cell-style="headerCellStyle"
       >
-        <el-table-column prop="batchNumber" label="检测ID" width="300" align="center" show-overflow-tooltip />
+        <el-table-column prop="batchNumber" label="检测ID" width="220" align="center" show-overflow-tooltip />
+        <el-table-column label="批号" width="100" align="center">
+          <template #default="{ row }">{{ row.batchNo ?? '—' }}</template>
+        </el-table-column>
+        <el-table-column label="卷序" width="80" align="center">
+          <template #default="{ row }">{{ row.rollNo ?? '—' }}</template>
+        </el-table-column>
         <el-table-column label="" align="center" />
         <el-table-column label="划痕" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scratchCount ?? 0) : '' }}</template>
