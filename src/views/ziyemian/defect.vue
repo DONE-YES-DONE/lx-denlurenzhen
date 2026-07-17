@@ -25,6 +25,7 @@
         v-loading="loading"
         style="width: 100%"
         :header-cell-style="headerCellStyle"
+        :row-class-name="({ row }) => row.batchNumber ? '' : 'row-empty'"
       >
         <el-table-column prop="batchNumber" label="检测ID" width="300" align="center" show-overflow-tooltip />
         <el-table-column label="批号" width="100" align="center">
@@ -335,6 +336,7 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKeyDown) })
 .table-card :deep(.el-table__body tr:hover) { background: #eff6ff !important; }
 .table-card :deep(.el-table__body tr:nth-child(even)) { background: #f8fafc; }
 .table-card :deep(.el-table__body td) { border-bottom: 1px solid #f1f5f9; padding: 10px 0; white-space: nowrap; }
+.table-card :deep(.row-empty td) { border-bottom: none; }
 .table-card :deep(.el-table__body td .cell) { overflow: hidden; text-overflow: ellipsis; }
 .table-card :deep(.el-table__fixed-right-patch) { background: #1e293b !important; }
 
