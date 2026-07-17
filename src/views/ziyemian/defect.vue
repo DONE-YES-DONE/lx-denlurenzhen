@@ -2,13 +2,13 @@
   <div class="defect-container">
     <div class="page-header">
       <h2 class="page-title">表面缺陷检测</h2>
-      <p class="page-desc">管理检测记录，查看缺陷图片与统计结果</p>
+      <p class="page-desc">管理检测批次，查看缺陷图片与统计结果</p>
     </div>
 
     <!-- 操作栏 -->
     <div class="filter-card">
       <div class="filter-row">
-        <el-input v-model="searchBatch" placeholder="输入检测ID" clearable class="filter-input" @keyup.enter="handleSearch" />
+        <el-input v-model="searchBatch" placeholder="输入批次号" clearable class="filter-input" @keyup.enter="handleSearch" />
         <span style="flex: 1;"></span>
         <el-button type="primary" size="small" class="btn-compact btn-gradient" @click="handleSearch"><i class="fas fa-search"></i> 查询</el-button>
         <el-button size="small" class="btn-compact" @click="toggleSort"><i class="fas" :class="sortOrder === 'desc' ? 'fa-sort-amount-down' : 'fa-sort-amount-up'"></i> {{ sortOrder === 'desc' ? '倒序' : '正序' }}</el-button>
@@ -26,13 +26,7 @@
         style="width: 100%"
         :header-cell-style="headerCellStyle"
       >
-        <el-table-column prop="batchNumber" label="检测ID" width="300" align="center" show-overflow-tooltip />
-        <el-table-column label="批号" width="130" align="center">
-          <template #default="{ row }">{{ row._batchNo ?? '—' }}</template>
-        </el-table-column>
-        <el-table-column label="卷序" width="100" align="center">
-          <template #default="{ row }">{{ row._rollNo ?? '—' }}</template>
-        </el-table-column>
+        <el-table-column prop="batchNumber" label="批次号" width="300" align="center" show-overflow-tooltip />
         <el-table-column label="" align="center" />
         <el-table-column label="划痕" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scratchCount ?? 0) : '' }}</template>
@@ -50,6 +44,14 @@
           <template #default="{ row }">{{ row.batchNumber ? (row.scuffCount ?? 0) : '' }}</template>
         </el-table-column>
         <el-table-column label="" align="center" />
+        <el-table-column label="评估结果" width="200" align="center">
+          <template #default="{ row }">
+            <span v-if="row.batchNumber && row.modelEvaluationResult" class="eval-tag" :class="evalClass(row.modelEvaluationResult)">
+              {{ evalText(row.modelEvaluationResult) }}
+            </span>
+            <span v-else-if="row.batchNumber" class="text-muted">—</span>
+          </template>
+        </el-table-column>
         <el-table-column label="平均置信度" width="170" align="center">
           <template #default="{ row }">
             <template v-if="row.batchNumber && row.avgConfidence != null">
@@ -95,7 +97,7 @@
           <span class="eval-tag" :class="evalClass(drawerRow.modelEvaluationResult)">
             {{ evalText(drawerRow.modelEvaluationResult) }}
           </span>
-          <span>检测ID: {{ drawerRow.batchNumber }} | 共 {{ drawerImages.length }} 张</span>
+          <span>批次号: {{ drawerRow.batchNumber }} | 共 {{ drawerImages.length }} 张</span>
         </div>
 
         <div class="drawer-split">
@@ -150,6 +152,7 @@
               <div class="lightbox-info-item"><span>毛刺</span><span>{{ drawerRow.metalBurrCount ?? 0 }}</span></div>
               <div class="lightbox-info-item"><span>擦伤</span><span>{{ drawerRow.scuffCount ?? 0 }}</span></div>
               <div class="lightbox-info-div"></div>
+              <div class="lightbox-info-item"><span>评估结果</span><span class="info-conf">{{ evalText(drawerRow.modelEvaluationResult) }}</span></div>
               <div class="lightbox-info-item"><span>置信度</span><span class="info-conf">{{ drawerRow.avgConfidence != null ? (drawerRow.avgConfidence * 100).toFixed(2) : '—' }}%</span></div>
             </div>
           </div>
@@ -168,7 +171,6 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
 import defectApi from '@/api/defect'
-import wireMaterialApi from '@/api/wire-material'
 
 // ==================== 列表 ====================
 const tableData = ref([])
@@ -246,17 +248,6 @@ const loadList = async () => {
     const res = await defectApi.selectDefectList(currentPage.value, pageSize.value)
     if (res.code === 200) {
       const rows = res.data.records || []
-      // 并行拉取线材详情补充 batchNo 和 rollNo
-      await Promise.all(rows.map(async (r) => {
-        if (!r.batchNumber) return
-        try {
-          const wr = await wireMaterialApi.selectWireBatchNumber(r.batchNumber)
-          if (wr.code === 200 && wr.data) {
-            r._batchNo = wr.data.batchNo
-            r._rollNo = wr.data.rollNo
-          }
-        } catch { /* 忽略单条失败 */ }
-      }))
       while (rows.length < pageSize.value) rows.push({})
       tableData.value = rows
       total.value = res.data.total || 0
@@ -278,9 +269,9 @@ const handleSearch = async () => {
     if (res.code === 200) {
       const arr = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : [])
       if (arr.length) { tableData.value = arr; total.value = arr.length }
-      else { ElMessage.warning('未找到该检测ID'); tableData.value = []; total.value = 0 }
+      else { ElMessage.warning('未找到该批次'); tableData.value = []; total.value = 0 }
     } else {
-      ElMessage.warning('未找到该检测ID'); tableData.value = []; total.value = 0
+      ElMessage.warning('未找到该批次'); tableData.value = []; total.value = 0
     }
   } catch { ElMessage.error('查询失败') }
   loading.value = false
@@ -302,7 +293,7 @@ const handleExport = () => {
   const rows = tableData.value.filter(r => r.batchNumber)
   if (!rows.length) { ElMessage.warning('没有可导出的数据'); return }
   const cols = ['batchNumber','totalImages','scratchCount','blockDefectCount','clusterDefectCount','metalBurrCount','scuffCount','avgConfidence','status','createTime']
-  const labels = ['检测ID','检测图片数','划痕','块状','簇状','毛刺','擦伤','平均置信度','状态','创建时间']
+  const labels = ['批次号','检测图片数','划痕','块状','簇状','毛刺','擦伤','平均置信度','状态','创建时间']
   const csv = [labels.join(',')]
   rows.forEach(r => { csv.push(cols.map(c => { const v = r[c]; return v != null ? `"${String(v).replace(/"/g,'""')}"` : '' }).join(',')) })
   const blob = new Blob(['﻿' + csv.join('\n')], { type: 'text/csv;charset=utf-8' })
