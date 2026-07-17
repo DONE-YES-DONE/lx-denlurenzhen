@@ -45,7 +45,6 @@ export default {
           if (callbacks.onDone) callbacks.onDone('')
           break
         }
-        chunkIdx++
         const chunk = decoder.decode(value, { stream: true })
         buffer += chunk
         // 按完整 SSE 事件分割（\n\n 结尾）
