@@ -12,7 +12,7 @@
               style="width: 70%; height: 70%; object-fit: contain;"
             >
           </div>
-          <span class="brand-name">金属线材综合抽检平台</span>
+          <span class="brand-name">金属线材应用检测平台</span>
         </div>
 
         <!-- 中间导航菜单（桌面端） -->
@@ -57,7 +57,7 @@
             </div>
             <div class="dropdown-menu" v-show="showDropdown">
               <div class="dropdown-item" @click="showDropdown = false; router.push('/home/settings')">
-                <i class="fas fa-user-cog"></i>用户设置
+                <i class="fas fa-user-cog"></i>个人中心
               </div>
               <div class="dropdown-item" @click="handleLogout">
                 <i class="fas fa-sign-out-alt"></i>退出登录
@@ -574,7 +574,6 @@ onMounted(async () => {
   activeMenu.value = route.path
   try {
     await authStore.getuserdateandid()
-    console.log('用户数据加载成功:', JSON.stringify(authStore.userDate))
   } catch (e) {
     console.error('加载用户信息失败:', e)
   }

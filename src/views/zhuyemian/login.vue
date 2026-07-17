@@ -485,7 +485,6 @@ const handleLogin = async ()=> {
             accountForm.value.password,
             accountForm.value.remember
         )
-        console.log(response.data)
         //判断登陆是否成功
         if(response.code === 200){
             const token = response.data
@@ -545,8 +544,7 @@ const handleCodeLogin = async () => {
 
 // ROOT用户登录
 const handleRootLogin = () => {
-  // TODO: 在这里写 ROOT 登录的逻辑
-  console.log('ROOT用户登录', rootForm.value)
+  // ROOT 登录逻辑待实现
 }
 </script>
 

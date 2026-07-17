@@ -527,8 +527,10 @@ function renderBatchCharts() {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter: (params) => {
-          const v = params[0].value
-          let html = `${params[0].axisValue}<br/>${p.label}: <b>${v} ${p.unit}</b>`
+          // 取最后一个系列（数据点系列，z:10），避免取到线段系列的值
+          const entry = Array.isArray(params) ? params[params.length - 1] : params
+          const v = Number(entry.value)
+          let html = `${entry.axisValue}<br/>${p.label}: <b>${v} ${p.unit}</b>`
           const status = v >= range.min && v <= range.max
             ? '<span style="color:#22c55e">● 合格</span>'
             : '<span style="color:#ef4444">● 不合格</span>'
@@ -552,12 +554,16 @@ function renderBatchCharts() {
     }
 
     if (isLine) {
-      // 逐段着色：两端都合格=绿线，否则=红线
+      // 逐段着色：每段颜色跟起点数据点，合格=绿 不合格=红
       const segSeries = []
       for (let i = 0; i < values.length - 1; i++) {
-        const qA = values[i] >= range.min && values[i] <= range.max
-        const qB = values[i + 1] >= range.min && values[i + 1] <= range.max
-        const segColor = (qA && qB) ? '#22c55e' : '#ef4444'
+        const startOk = values[i] >= range.min && values[i] <= range.max
+        const endOk = values[i + 1] >= range.min && values[i + 1] <= range.max
+        // 两端都合格=绿，两端都不合格=红，一合格一不合格=橙色过渡
+        let segColor
+        if (startOk && endOk) segColor = '#22c55e'
+        else if (!startOk && !endOk) segColor = '#ef4444'
+        else segColor = '#f59e0b'
         segSeries.push({
           type: 'line',
           smooth: true,

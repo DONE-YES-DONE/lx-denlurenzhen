@@ -33,8 +33,12 @@
         <el-table-column type="selection" width="44" fixed="left" align="center" :selectable="row => !!row.deviceId" />
         <el-table-column prop="deviceId" label="设备ID" width="210" align="center" show-overflow-tooltip />
         <el-table-column prop="deviceCode" label="设备代码" width="180" align="center" />
-        <el-table-column prop="createTime" label="创建时间" width="340" align="center" />
-        <el-table-column prop="updateTime" label="更新时间" width="340" align="center" />
+        <el-table-column label="创建时间" width="170" align="center">
+          <template #default="{ row }">{{ row.deviceId ? formatTime(row.createTime) : '' }}</template>
+        </el-table-column>
+        <el-table-column label="更新时间" width="170" align="center">
+          <template #default="{ row }">{{ row.deviceId ? formatTime(row.updateTime) : '' }}</template>
+        </el-table-column>
         <el-table-column align="center" />
         <el-table-column label="状态" width="190" align="center">
           <template #default="{ row }">
@@ -180,6 +184,7 @@ const handleSearch = () => {
 const handleRefresh = () => { searchId.value = ''; currentPage.value = 1; loadList(); loadDeviceList() }
 const handleAdd = () => { form.value = { deviceId: '', deviceCode: '', status: 'ON' }; formVisible.value = true }
 
+const formatTime = (t) => t ? t.replace('T', ' ') : ''
 const sortOrder = ref('desc')
 const toggleSort = () => { sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'; sortData() }
 const sortData = () => {
@@ -222,7 +227,6 @@ const handleSubmit = async () => {
   submitLoading.value = true
   try {
     const res = await deviceApi.createDevice(form.value)
-    console.log('新增设备返回:', JSON.stringify(res))
     if (res.code === 200) { ElMessage.success('创建成功'); formVisible.value = false; loadList(); loadDeviceList() }
     else ElMessage.error(res.message || '操作失败')
   } catch { ElMessage.error('操作失败') }

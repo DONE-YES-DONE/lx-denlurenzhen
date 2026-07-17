@@ -26,49 +26,43 @@
         style="width: 100%"
         :header-cell-style="headerCellStyle"
       >
-        <el-table-column prop="batchNumber" label="批次号" width="180" fixed="left" align="center" show-overflow-tooltip />
-        <el-table-column prop="totalImages" label="检测图片数" width="150" align="center">
-          <template #default="{ row }">{{ row.batchNumber ? (row.totalImages ?? 0) : '' }}</template>
-        </el-table-column>
-        <el-table-column label="划痕" width="130" align="center">
+        <el-table-column prop="batchNumber" label="批次号" min-width="220" fixed="left" align="center" show-overflow-tooltip />
+        <el-table-column label="划痕" width="110" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scratchCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="块状" width="130" align="center">
+        <el-table-column label="块状" width="110" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.blockDefectCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="簇状" width="130" align="center">
+        <el-table-column label="簇状" width="110" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.clusterDefectCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="毛刺" width="130" align="center">
+        <el-table-column label="毛刺" width="110" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.metalBurrCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="擦伤" width="130" align="center">
+        <el-table-column label="擦伤" width="110" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scuffCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="平均置信度" width="140" align="center">
+        <el-table-column label="评估结果" width="120" align="center">
+          <template #default="{ row }">
+            <span v-if="row.batchNumber && row.modelEvaluationResult" class="eval-tag" :class="evalClass(row.modelEvaluationResult)">
+              {{ evalText(row.modelEvaluationResult) }}
+            </span>
+            <span v-else-if="row.batchNumber" class="text-muted">—</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="平均置信度" width="150" align="center">
           <template #default="{ row }">
             <template v-if="row.batchNumber && row.avgConfidence != null">
               <div class="mini-progress">
                 <div class="mini-progress-bar">
-                  <div class="mini-progress-fill" :style="{ width: parseFloat(row.avgConfidence) + '%', background: confidenceColor(row.avgConfidence) }"></div>
+                  <div class="mini-progress-fill" :style="{ width: (parseFloat(row.avgConfidence) * 100) + '%', background: confidenceColor(row.avgConfidence) }"></div>
                 </div>
-                <span class="mini-progress-text" :style="{ color: confidenceColor(row.avgConfidence) }">{{ row.avgConfidence }}%</span>
+                <span class="mini-progress-text" :style="{ color: confidenceColor(row.avgConfidence) }">{{ (row.avgConfidence * 100).toFixed(2) }}%</span>
               </div>
             </template>
             <span v-else-if="row.batchNumber" class="text-muted">—</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" align="center">
-          <template #default="{ row }">
-            <template v-if="row.batchNumber">
-              <span class="defect-tag" :class="'tag-' + statusClass(row.status)">
-                <span class="defect-dot"></span>
-                {{ statusText(row.status) }}
-              </span>
-            </template>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
         <el-table-column label="操作" width="120" fixed="right" align="center">
           <template #default="{ row }">
             <el-button v-if="row.batchNumber" type="primary" link size="small" class="action-btn" @click="handleViewImages(row)">
@@ -98,9 +92,8 @@
       </div>
       <div v-else class="drawer-body">
         <div class="drawer-info">
-          <span class="defect-tag" :class="'tag-' + statusClass(drawerRow.status)">
-            <span class="defect-dot"></span>
-            {{ statusText(drawerRow.status) }}
+          <span class="eval-tag" :class="evalClass(drawerRow.modelEvaluationResult)">
+            {{ evalText(drawerRow.modelEvaluationResult) }}
           </span>
           <span>批次号: {{ drawerRow.batchNumber }} | 共 {{ drawerImages.length }} 张</span>
         </div>
@@ -157,8 +150,8 @@
               <div class="lightbox-info-item"><span>毛刺</span><span>{{ drawerRow.metalBurrCount ?? 0 }}</span></div>
               <div class="lightbox-info-item"><span>擦伤</span><span>{{ drawerRow.scuffCount ?? 0 }}</span></div>
               <div class="lightbox-info-div"></div>
-              <div class="lightbox-info-item"><span>图片总数</span><span>{{ drawerRow.totalImages ?? 0 }}</span></div>
-              <div class="lightbox-info-item"><span>置信度</span><span class="info-conf">{{ drawerRow.avgConfidence ?? '—' }}%</span></div>
+              <div class="lightbox-info-item"><span>评估结果</span><span class="info-conf">{{ evalText(drawerRow.modelEvaluationResult) }}</span></div>
+              <div class="lightbox-info-item"><span>置信度</span><span class="info-conf">{{ drawerRow.avgConfidence != null ? (drawerRow.avgConfidence * 100).toFixed(2) : '—' }}%</span></div>
             </div>
           </div>
           <div class="lightbox-thumbs" v-if="drawerImages.length > 1">
@@ -236,13 +229,15 @@ const onKeyDown = (e) => { if (lightboxVisible.value) onLightboxKey(e) }
 // ==================== 状态映射 ====================
 const confidenceColor = (val) => {
   if (val == null) return '#e5e7eb'
-  const pct = parseFloat(val)
+  const pct = parseFloat(val) * 100
   if (pct >= 90) return '#10b981'
   if (pct >= 70) return '#f59e0b'
   return '#ef4444'
 }
 const statusClass = (v) => ({ PENDING: 'pending', PROCESSING: 'processing', SUCCESS: 'success', FAILED: 'failed' }[v] || 'pending')
 const statusText = (v) => ({ PENDING: '待处理', PROCESSING: '处理中', SUCCESS: '已完成', FAILED: '失败' }[v] || v)
+const evalClass = (v) => ({ PASS: 'eval-pass', FAIL: 'eval-fail', UNKNOWN: 'eval-unknown', PENDING_REVIEW: 'eval-pending' }[v] || 'eval-unknown')
+const evalText = (v) => ({ PASS: '合格', FAIL: '不合格', UNKNOWN: '未评估', PENDING_REVIEW: '待审核' }[v] || v)
 
 // ==================== 列表加载 ====================
 const loadList = async () => {
@@ -347,6 +342,13 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKeyDown) })
 .defect-tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
 .defect-dot { width: 6px; height: 6px; border-radius: 50%; }
 .tag-success { background: #ecfdf5; color: #059669; } .tag-success .defect-dot { background: #10b981; box-shadow: 0 0 4px #10b981; }
+
+/* 评估结果标签 */
+.eval-tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.eval-pass { background: #ecfdf5; color: #059669; }
+.eval-fail { background: #fef2f2; color: #dc2626; }
+.eval-unknown { background: #f1f5f9; color: #64748b; }
+.eval-pending { background: #fffbeb; color: #d97706; }
 .tag-failed { background: #fef2f2; color: #dc2626; } .tag-failed .defect-dot { background: #ef4444; box-shadow: 0 0 4px #ef4444; }
 .tag-pending { background: #f1f5f9; color: #64748b; } .tag-pending .defect-dot { background: #94a3b8; }
 .tag-processing { background: #fffbeb; color: #d97706; } .tag-processing .defect-dot { background: #f59e0b; box-shadow: 0 0 4px #f59e0b; }

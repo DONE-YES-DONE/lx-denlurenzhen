@@ -578,9 +578,11 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
       formatter: (p) => {
-        let html = `${p[0].axisValue}<br/>${title}: <b>${p[0].value} ${unit}</b>`
+        // 取最后一个系列（数据点系列，z:10），避免取到线段系列的值
+        const entry = Array.isArray(p) ? p[p.length - 1] : p
+        let html = `${entry.axisValue}<br/>${title}: <b>${entry.value} ${unit}</b>`
         if (range) {
-          const v = p[0].value
+          const v = Number(entry.value)
           const status = v >= range.min && v <= range.max
             ? '<span style="color:#22c55e">● 合格</span>'
             : '<span style="color:#ef4444">● 不合格</span>'
@@ -639,12 +641,15 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           markLine
         }]
       }
-      // 逐段着色：两端都合格=绿线，否则=红线
+      // 逐段着色：两端都合格=绿，两端都不合格=红，一合格一不合格=橙
       const segSeries = []
       for (let i = 0; i < values.length - 1; i++) {
-        const qA = range ? (values[i] >= range.min && values[i] <= range.max) : true
-        const qB = range ? (values[i + 1] >= range.min && values[i + 1] <= range.max) : true
-        const segColor = (qA && qB) ? '#22c55e' : '#ef4444'
+        const startOk = range ? (values[i] >= range.min && values[i] <= range.max) : true
+        const endOk = range ? (values[i + 1] >= range.min && values[i + 1] <= range.max) : true
+        let segColor
+        if (startOk && endOk) segColor = '#22c55e'
+        else if (!startOk && !endOk) segColor = '#ef4444'
+        else segColor = '#f59e0b'
         segSeries.push({
           type: 'line',
           smooth: true,

@@ -15,7 +15,6 @@ export default {
     const token = localStorage.getItem('token')
 
     try {
-      console.log('[SSE] 发起流式请求:', `${BASE}/ask/stream`)
       const response = await fetch(`${BASE}/ask/stream`, {
         method: 'POST',
         headers: {
@@ -25,52 +24,40 @@ export default {
         body: JSON.stringify({ deviceId, questionContent })
       })
 
-      console.log('[SSE] 响应状态:', response.status, 'Content-Type:', response.headers.get('Content-Type'))
       if (!response.ok) {
-        console.log('[SSE] 响应非 200，触发 fallback')
         throw new Error(`HTTP ${response.status}`)
       }
 
       const reader = response.body?.getReader()
       if (!reader) {
-        console.log('[SSE] 无 reader，整段解析')
         const text = await response.text()
-        console.log('[SSE] 整段原始文本:\n', text)
         this._parseSse(text, callbacks)
         return
       }
 
-      console.log('[SSE] 开始流式读取...')
       const decoder = new TextDecoder()
       let buffer = ''
-      let chunkIdx = 0
-      const t0 = performance.now()
 
       while (true) {
         const { done, value } = await reader.read()
-        const elapsed = (performance.now() - t0).toFixed(0)
         if (done) {
-          console.log(`[SSE] 流结束 [${elapsed}ms], 共 ${chunkIdx} 个 chunk, 剩余 buffer:`, JSON.stringify(buffer))
           if (buffer.trim()) this._parseSse(buffer, callbacks)
           if (callbacks.onDone) callbacks.onDone('')
           break
         }
         chunkIdx++
         const chunk = decoder.decode(value, { stream: true })
-        console.log(`[SSE] chunk #${chunkIdx} [${elapsed}ms], 长度=${chunk.length}:`, JSON.stringify(chunk.slice(0, 120)))
         buffer += chunk
         // 按完整 SSE 事件分割（\n\n 结尾）
         const parts = buffer.split('\n\n')
         buffer = parts.pop() || ''
         for (const part of parts) {
           if (part.trim()) {
-            console.log(`[SSE] 解析片段 [${elapsed}ms]:`, JSON.stringify(part.slice(0, 200)))
             this._parseSse(part, callbacks)
           }
         }
       }
     } catch (err) {
-      console.log('[SSE] 出错，触发 fallback:', err.message)
       try {
         return await this._fallbackSync(deviceId, questionContent, callbacks)
       } catch {
@@ -99,7 +86,6 @@ export default {
     }
     if (currentData) {
       if (currentData === '[DONE]') {
-        console.log('[SSE] DONE, 完整返回:\n', this._sseBuffer)
         this._sseBuffer = ''
         return
       }
@@ -110,8 +96,6 @@ export default {
         if (chunk) {
           this._sseBuffer += chunk
           if (callbacks.onToken) callbacks.onToken(chunk)
-        } else {
-          console.log('[SSE] JSON 无 content, 字段:', Object.keys(json))
         }
       } catch {
         // 不是 JSON，直接当纯文本

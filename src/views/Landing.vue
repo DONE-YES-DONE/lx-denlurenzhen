@@ -12,7 +12,7 @@
             >
           </div>
           <div class="brand-text">
-            <span class="brand-title">金属线材综合抽检平台</span>
+            <span class="brand-title">金属线材应用检测平台</span>
             <span class="brand-subtitle">Metal Wire Inspection</span>
           </div>
         </div>

@@ -46,7 +46,7 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="电导率范围" min-width="130" align="center">
+        <el-table-column label="电导率范围(MS/m)" min-width="130" align="center">
           <template #default="{ row }">
             <template v-if="row.scenarioCode">{{ row.conductivityMin }} ~ {{ row.conductivityMax }}</template>
           </template>
@@ -66,7 +66,9 @@
             <template v-if="row.scenarioCode">{{ row.diameterMin }} ~ {{ row.diameterMax }}</template>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
+        <el-table-column label="创建时间" width="170" align="center">
+          <template #default="{ row }">{{ row.scenarioCode ? fmt(row.createTime) : '' }}</template>
+        </el-table-column>
         <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
             <template v-if="row.scenarioCode">
@@ -138,12 +140,12 @@
         <el-descriptions-item label="场景编号">{{ currentRow.scenarioCode }}</el-descriptions-item>
         <el-descriptions-item label="场景名称">{{ currentRow.scenarioName }}</el-descriptions-item>
         <el-descriptions-item label="线材类型"><span class="scenario-tag" :class="wireTagClass(currentRow.wireType)">{{ currentRow.wireType }}</span></el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ currentRow.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ fmt(currentRow.createTime) }}</el-descriptions-item>
         <el-descriptions-item label="电导率">{{ currentRow.conductivityMin }} ~ {{ currentRow.conductivityMax }}</el-descriptions-item>
         <el-descriptions-item label="延展率(%)">{{ currentRow.extensibilityMin }} ~ {{ currentRow.extensibilityMax }}</el-descriptions-item>
         <el-descriptions-item label="重量(g)">{{ currentRow.weightMin }} ~ {{ currentRow.weightMax }}</el-descriptions-item>
         <el-descriptions-item label="直径(mm)">{{ currentRow.diameterMin }} ~ {{ currentRow.diameterMax }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间" :span="2">{{ currentRow.updateTime }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间" :span="2">{{ fmt(currentRow.updateTime) }}</el-descriptions-item>
       </el-descriptions>
       <template #footer><el-button type="primary" @click="viewVisible = false">关闭</el-button></template>
     </el-dialog>
@@ -172,6 +174,7 @@ const headerCellStyle = {
   padding: '12px 0'
 }
 
+const fmt = (t) => t ? t.replace('T', ' ') : ''
 const wireType = ref('')
 const scenarioName = ref('')
 
