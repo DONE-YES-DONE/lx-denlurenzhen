@@ -121,8 +121,6 @@
         v-loading="tableLoading"
         style="width: 100%"
         :header-cell-style="headerCellStyle"
-        @row-click="openTableRow"
-        highlight-current-row
       >
         <el-table-column prop="batchNo" label="批号" width="110" align="center">
           <template #default="{ row }">
@@ -400,6 +398,7 @@ const switchView = (mode) => {
   viewMode.value = mode
   pageSize.value = mode === 'card' ? 12 : 10
   currentPage.value = 1
+  activeBatchNo.value = null
   if (mode === 'card') loadCardData()
   else loadTableData()
 }
