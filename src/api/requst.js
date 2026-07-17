@@ -16,6 +16,7 @@ export const requestDevice = axios.create({
 export const requestWire = axios.create({
   baseURL: '/api/wire-material',
   timeout: 10000,
+  responseType: 'text',
 })
 
 //应用管理模块
