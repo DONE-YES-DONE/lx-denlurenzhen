@@ -572,6 +572,8 @@ function renderBatchCharts() {
           data: values.map((v, j) => (j === i || j === i + 1) ? v : null)
         })
       }
+      // 把 markLine 放在第一个可见线段系列上，确保虚线渲染
+      if (segSeries.length > 0) segSeries[0].markLine = markLine
       option.series = [
         ...segSeries,
         {
@@ -587,7 +589,6 @@ function renderBatchCharts() {
               itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
             }
           }),
-          markLine,
           z: 10
         }
       ]
