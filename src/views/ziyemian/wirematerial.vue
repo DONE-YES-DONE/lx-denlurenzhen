@@ -673,11 +673,11 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           itemStyle: { color: qualified ? '#22c55e' : '#ef4444', borderColor: '#fff', borderWidth: 2 }
         }
       })
-      // 把 markLine 放在第一个可见线段系列上，确保虚线渲染
-      if (segSeries.length > 0) segSeries[0].markLine = markLine
+      // 把 markLine 放在第一个可见线段系列上；单个数据点时挂在数据点系列上
+      if (segSeries.length > 0) { segSeries[0].markLine = markLine }
       return [
         ...segSeries,
-        { type: 'line', smooth: true, lineStyle: { width: 0 }, symbol: 'circle', data: lineData, z: 10 }
+        { type: 'line', smooth: true, lineStyle: { width: 0 }, symbol: 'circle', data: lineData, markLine: segSeries.length === 0 ? markLine : undefined, z: 10 }
       ]
     })()
   }
