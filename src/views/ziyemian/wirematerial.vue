@@ -127,7 +127,7 @@
       >
         <el-table-column prop="batchNo" label="批号" width="110" align="center">
           <template #default="{ row }">
-            <span class="table-batch-no">#{{ row.batchNo }}</span>
+            <span v-if="row.batchNo" class="table-batch-no">#{{ row.batchNo }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="rollNo" label="卷序" width="80" align="center" />
@@ -156,22 +156,26 @@
                 <span class="mini-progress-text" :style="{ color: confidenceColor(row.modelConfidence) }">{{ confidencePct(row.modelConfidence) }}%</span>
               </div>
             </template>
-            <span v-else class="text-muted">—</span>
+            <span v-else-if="row.batchNo" class="text-muted">—</span>
           </template>
         </el-table-column>
 
         <el-table-column label="结果" min-width="120" align="center">
           <template #default="{ row }">
-            <span class="device-tag" :class="row.tagClass">
-              <span class="device-dot"></span>
-              {{ row.resultLabel }}
-            </span>
+            <template v-if="row.batchNo">
+              <span class="device-tag" :class="row.tagClass">
+                <span class="device-dot"></span>
+                {{ row.resultLabel }}
+              </span>
+            </template>
           </template>
         </el-table-column>
         <el-table-column label="评估" min-width="170" align="center" show-overflow-tooltip>
           <template #default="{ row }">
-            <span v-if="row.evaluationMessage" class="eval-text">{{ row.evaluationMessage }}</span>
-            <span v-else class="text-muted">—</span>
+            <template v-if="row.batchNo">
+              <span v-if="row.evaluationMessage" class="eval-text">{{ row.evaluationMessage }}</span>
+              <span v-else class="text-muted">—</span>
+            </template>
           </template>
         </el-table-column>
         <el-table-column prop="responsiblePerson" label="负责人" min-width="100" align="center" />
