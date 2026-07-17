@@ -26,23 +26,25 @@
         style="width: 100%"
         :header-cell-style="headerCellStyle"
       >
-        <el-table-column prop="batchNumber" label="批次号" min-width="220" fixed="left" align="center" show-overflow-tooltip />
-        <el-table-column label="划痕" width="110" align="center">
+        <el-table-column prop="batchNumber" label="批次号" width="300" align="center" show-overflow-tooltip />
+        <el-table-column label="" align="center" />
+        <el-table-column label="划痕" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scratchCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="块状" width="110" align="center">
+        <el-table-column label="块状" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.blockDefectCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="簇状" width="110" align="center">
+        <el-table-column label="簇状" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.clusterDefectCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="毛刺" width="110" align="center">
+        <el-table-column label="毛刺" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.metalBurrCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="擦伤" width="110" align="center">
+        <el-table-column label="擦伤" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scuffCount ?? 0) : '' }}</template>
         </el-table-column>
-        <el-table-column label="评估结果" width="120" align="center">
+        <el-table-column label="" align="center" />
+        <el-table-column label="评估结果" width="200" align="center">
           <template #default="{ row }">
             <span v-if="row.batchNumber && row.modelEvaluationResult" class="eval-tag" :class="evalClass(row.modelEvaluationResult)">
               {{ evalText(row.modelEvaluationResult) }}
@@ -50,7 +52,7 @@
             <span v-else-if="row.batchNumber" class="text-muted">—</span>
           </template>
         </el-table-column>
-        <el-table-column label="平均置信度" width="150" align="center">
+        <el-table-column label="平均置信度" width="170" align="center">
           <template #default="{ row }">
             <template v-if="row.batchNumber && row.avgConfidence != null">
               <div class="mini-progress">
@@ -63,7 +65,7 @@
             <span v-else-if="row.batchNumber" class="text-muted">—</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right" align="center">
+        <el-table-column label="操作" width="200" align="center">
           <template #default="{ row }">
             <el-button v-if="row.batchNumber" type="primary" link size="small" class="action-btn" @click="handleViewImages(row)">
               <i class="fas fa-image"></i> 查看
