@@ -2,13 +2,13 @@
   <div class="defect-container">
     <div class="page-header">
       <h2 class="page-title">表面缺陷检测</h2>
-      <p class="page-desc">管理检测批次，查看缺陷图片与统计结果</p>
+      <p class="page-desc">管理检测记录，查看缺陷图片与统计结果</p>
     </div>
 
     <!-- 操作栏 -->
     <div class="filter-card">
       <div class="filter-row">
-        <el-input v-model="searchBatch" placeholder="输入批次号" clearable class="filter-input" @keyup.enter="handleSearch" />
+        <el-input v-model="searchBatch" placeholder="输入检测ID" clearable class="filter-input" @keyup.enter="handleSearch" />
         <span style="flex: 1;"></span>
         <el-button type="primary" size="small" class="btn-compact btn-gradient" @click="handleSearch"><i class="fas fa-search"></i> 查询</el-button>
         <el-button size="small" class="btn-compact" @click="toggleSort"><i class="fas" :class="sortOrder === 'desc' ? 'fa-sort-amount-down' : 'fa-sort-amount-up'"></i> {{ sortOrder === 'desc' ? '倒序' : '正序' }}</el-button>
@@ -26,7 +26,7 @@
         style="width: 100%"
         :header-cell-style="headerCellStyle"
       >
-        <el-table-column prop="batchNumber" label="批次号" width="300" align="center" show-overflow-tooltip />
+        <el-table-column prop="batchNumber" label="检测ID" width="300" align="center" show-overflow-tooltip />
         <el-table-column label="" align="center" />
         <el-table-column label="划痕" width="190" align="center">
           <template #default="{ row }">{{ row.batchNumber ? (row.scratchCount ?? 0) : '' }}</template>
@@ -44,14 +44,6 @@
           <template #default="{ row }">{{ row.batchNumber ? (row.scuffCount ?? 0) : '' }}</template>
         </el-table-column>
         <el-table-column label="" align="center" />
-        <el-table-column label="评估结果" width="200" align="center">
-          <template #default="{ row }">
-            <span v-if="row.batchNumber && row.modelEvaluationResult" class="eval-tag" :class="evalClass(row.modelEvaluationResult)">
-              {{ evalText(row.modelEvaluationResult) }}
-            </span>
-            <span v-else-if="row.batchNumber" class="text-muted">—</span>
-          </template>
-        </el-table-column>
         <el-table-column label="平均置信度" width="170" align="center">
           <template #default="{ row }">
             <template v-if="row.batchNumber && row.avgConfidence != null">
