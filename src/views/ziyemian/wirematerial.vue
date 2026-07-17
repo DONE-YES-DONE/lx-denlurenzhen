@@ -184,7 +184,7 @@
         </el-table-column>
         <el-table-column label="操作" width="100" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button type="primary" link size="small" class="action-btn" @click.stop="handleView(row)"><i class="fas fa-eye"></i> 查看</el-button>
+            <el-button v-if="row.batchNo" type="primary" link size="small" class="action-btn" @click.stop="handleView(row)"><i class="fas fa-eye"></i> 查看</el-button>
           </template>
         </el-table-column>
       </el-table>
