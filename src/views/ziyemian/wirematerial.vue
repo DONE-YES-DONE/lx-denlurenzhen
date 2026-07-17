@@ -602,11 +602,17 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
       axisTick: { show: false },
       axisLabel: { color: '#6b7280', fontSize: 11, interval: 0 },
     },
-    yAxis: {
-      type: 'value',
-      axisLabel: { color: '#6b7280', fontSize: 10 },
-      splitLine: { lineStyle: { color: '#f3f4f6' } }
-    },
+    yAxis: (() => {
+      const allVals = range ? [...values, range.min, range.max] : values
+      const lo = Math.min(...allVals), hi = Math.max(...allVals)
+      const pad = (hi - lo) * 0.08 || 1
+      return {
+        type: 'value',
+        min: lo - pad, max: hi + pad,
+        axisLabel: { color: '#6b7280', fontSize: 10 },
+        splitLine: { lineStyle: { color: '#f3f4f6' } }
+      }
+    })(),
     series: (() => {
       if (type === 'bar') {
         return [{

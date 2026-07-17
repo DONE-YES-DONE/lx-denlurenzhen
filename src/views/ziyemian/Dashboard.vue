@@ -548,6 +548,8 @@ function renderBatchCharts() {
       },
       yAxis: {
         type: 'value',
+        min: Math.min(...[...values, range.min, range.max]) - ((Math.max(...[...values, range.min, range.max]) - Math.min(...[...values, range.min, range.max])) * 0.08 || 1),
+        max: Math.max(...[...values, range.min, range.max]) + ((Math.max(...[...values, range.min, range.max]) - Math.min(...[...values, range.min, range.max])) * 0.08 || 1),
         axisLabel: { color: '#6b7280', fontSize: 10 },
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       }
