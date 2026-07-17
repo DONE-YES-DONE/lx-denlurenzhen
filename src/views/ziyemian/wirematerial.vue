@@ -54,7 +54,6 @@
     <div v-show="viewMode === 'card'" class="filter-card">
       <div class="filter-row">
         <el-input v-model="filters.batchNo" placeholder="搜索批次号" clearable class="filter-input filter-sm" @keyup.enter="handleSearch" />
-        <el-button size="small" class="btn-compact" @click="handleExactSearch">精确查询</el-button>
         <span style="flex: 1;"></span>
         <div class="view-toggle">
           <button :class="['view-btn', { active: viewMode === 'card' }]" @click="switchView('card')" title="卡片视图">
@@ -409,33 +408,6 @@ const handleSearch = () => {
   currentPage.value = 1
   if (viewMode.value === 'card') loadCardData()
   else if (viewMode.value === 'table') loadTableData()
-}
-const handleExactSearch = async () => {
-  const batchNo = filters.value.batchNo?.trim()
-  if (!batchNo) { ElMessage.warning('请输入批次号'); return }
-  tableLoading.value = true
-  try {
-    const res = await wireMaterialApi.selectWireBatchNumber(batchNo)
-    if (res.code === 200 && res.data) {
-      const r = res.data
-      tableData.value = [{
-        ...r,
-        tagClass: RESULT_TAG_CLASS[r.modelEvaluationResult] || 'tag-unknown',
-        resultLabel: RESULT_MAP[r.modelEvaluationResult] || r.modelEvaluationResult || '—'
-      }]
-      tableTotal.value = 1
-      viewMode.value = 'table'
-    } else {
-      ElMessage.warning('未找到该批次')
-      tableData.value = []
-      tableTotal.value = 0
-    }
-  } catch {
-    ElMessage.warning('未找到该批次')
-    tableData.value = []
-    tableTotal.value = 0
-  }
-  tableLoading.value = false
 }
 const handleRefresh = () => {
   filters.value = { batchNo: '', deviceId: '', scenarioCode: '', responsiblePerson: '', modelEvaluationResult: '', dateRange: null }
