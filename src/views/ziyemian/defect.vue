@@ -29,10 +29,10 @@
       >
         <el-table-column prop="batchNumber" label="检测ID" width="300" align="center" show-overflow-tooltip />
         <el-table-column label="批号" width="100" align="center">
-          <template #default="{ row }">{{ row.batchNo ?? '—' }}</template>
+          <template #default="{ row }">{{ row.batchNumber ? (row.batchNo ?? '—') : '' }}</template>
         </el-table-column>
         <el-table-column label="卷序" width="80" align="center">
-          <template #default="{ row }">{{ row.rollNo ?? '—' }}</template>
+          <template #default="{ row }">{{ row.batchNumber ? (row.rollNo ?? '—') : '' }}</template>
         </el-table-column>
         <el-table-column label="" align="center" />
         <el-table-column label="划痕" width="190" align="center">
@@ -336,7 +336,7 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKeyDown) })
 .table-card :deep(.el-table__body tr:hover) { background: #eff6ff !important; }
 .table-card :deep(.el-table__body tr:nth-child(even)) { background: #f8fafc; }
 .table-card :deep(.el-table__body td) { border-bottom: 1px solid #f1f5f9; padding: 10px 0; white-space: nowrap; }
-.table-card :deep(.row-empty td) { border-bottom: none; }
+.table-card :deep(.row-empty td) { border-bottom: none !important; }
 .table-card :deep(.el-table__body td .cell) { overflow: hidden; text-overflow: ellipsis; }
 .table-card :deep(.el-table__fixed-right-patch) { background: #1e293b !important; }
 
