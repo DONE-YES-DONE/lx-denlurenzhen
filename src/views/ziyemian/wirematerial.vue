@@ -9,6 +9,8 @@
     <div v-show="viewMode === 'table'" class="filter-card">
       <div class="filter-row">
         <el-input v-model="filters.batchNo" placeholder="批号" clearable class="filter-input filter-sm" @keyup.enter="handleSearch" />
+        <el-input v-model="searchBatchId" placeholder="检测ID" clearable class="filter-input filter-sm" @keyup.enter="handleIdSearch" />
+        <el-button size="small" type="primary" class="btn-compact" @click="handleIdSearch">ID查询</el-button>
         <el-input v-model="filters.deviceId" placeholder="设备ID" clearable class="filter-input filter-sm" @keyup.enter="handleSearch" />
         <el-select v-model="filters.modelEvaluationResult" placeholder="评估结果" clearable class="filter-input filter-sm" @change="handleSearch">
           <el-option label="合格" value="PASS" />
@@ -301,6 +303,7 @@ const filters = ref({
 const currentPage = ref(1)
 const pageSize = ref(10)
 const viewMode = ref('card') // 'card' | 'table'
+const searchBatchId = ref('')
 
 // ==================== 卡片视图 — 真实数据 ====================
 const cardLoading = ref(false)
@@ -407,6 +410,20 @@ const handleSearch = () => {
   currentPage.value = 1
   if (viewMode.value === 'card') loadCardData()
   else if (viewMode.value === 'table') loadTableData()
+}
+const handleIdSearch = async () => {
+  const id = searchBatchId.value?.trim()
+  if (!id) { ElMessage.warning('请输入检测ID'); return }
+  tableLoading.value = true
+  try {
+    const res = await wireMaterialApi.selectWireBatchNumber(id)
+    if (res.code === 200 && res.data) {
+      const r = res.data
+      tableData.value = [{ ...r, tagClass: RESULT_TAG_CLASS[r.modelEvaluationResult] || 'tag-unknown', resultLabel: RESULT_MAP[r.modelEvaluationResult] || r.modelEvaluationResult || '—' }]
+      tableTotal.value = 1
+    } else { ElMessage.warning('未找到该检测ID'); tableData.value = []; tableTotal.value = 0 }
+  } catch { ElMessage.warning('未找到该检测ID'); tableData.value = []; tableTotal.value = 0 }
+  tableLoading.value = false
 }
 const handleRefresh = () => {
   filters.value = { batchNo: '', deviceId: '', scenarioCode: '', responsiblePerson: '', modelEvaluationResult: '', dateRange: null }
