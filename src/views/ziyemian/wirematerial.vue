@@ -123,6 +123,7 @@
         v-loading="tableLoading"
         style="width: 100%"
         :header-cell-style="headerCellStyle"
+        :row-class-name="({ row }) => row.batchNo ? '' : 'row-empty'"
       >
         <el-table-column prop="batchNo" label="批号" width="110" align="center">
           <template #default="{ row }">
@@ -376,6 +377,7 @@ const loadTableData = async () => {
       tagClass: RESULT_TAG_CLASS[r.modelEvaluationResult] || 'tag-unknown',
       resultLabel: RESULT_MAP[r.modelEvaluationResult] || r.modelEvaluationResult || '—'
     }))
+    while (tableData.value.length < pageSize.value) tableData.value.push({})
     tableTotal.value = p.total ?? 0
   } catch (e) {
     console.error('表格数据加载失败', e)
@@ -420,6 +422,7 @@ const handleIdSearch = async () => {
     if (res.code === 200 && res.data) {
       const r = res.data
       tableData.value = [{ ...r, tagClass: RESULT_TAG_CLASS[r.modelEvaluationResult] || 'tag-unknown', resultLabel: RESULT_MAP[r.modelEvaluationResult] || r.modelEvaluationResult || '—' }]
+      while (tableData.value.length < pageSize.value) tableData.value.push({})
       tableTotal.value = 1
     } else { ElMessage.warning('未找到该检测ID'); tableData.value = []; tableTotal.value = 0 }
   } catch { ElMessage.warning('未找到该检测ID'); tableData.value = []; tableTotal.value = 0 }
@@ -864,7 +867,8 @@ onBeforeUnmount(() => { window.removeEventListener('resize', onResize); chartIns
 .table-card :deep(.el-table__body tr) { cursor: pointer; transition: background 0.2s; }
 .table-card :deep(.el-table__body tr:hover) { background: #eff6ff !important; }
 .table-card :deep(.el-table__body tr:nth-child(even)) { background: #f8fafc; }
-.table-card :deep(.el-table__body td) { border-bottom: 1px solid #f1f5f9; padding: 10px 0; white-space: nowrap; }
+.table-card :deep(.el-table__body td) { border-bottom: 1px solid #f1f5f9; padding: 0 12px; height: 52px; white-space: nowrap; }
+.table-card :deep(.row-empty td) { border-bottom: none !important; }
 .table-card :deep(.el-table__body td .cell) { overflow: hidden; text-overflow: ellipsis; }
 .table-card :deep(.el-table__body tr:hover td:first-child) { border-left: 3px solid #3b82f6; }
 .table-card :deep(.el-table__fixed-right-patch) { background: #1e293b !important; }
