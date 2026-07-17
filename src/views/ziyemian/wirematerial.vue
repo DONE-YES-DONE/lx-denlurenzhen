@@ -569,8 +569,8 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
     symbol: 'none',
     lineStyle: { type: 'dashed', width: 1.5 },
     data: [
-      { yAxis: range.min, name: '下限', label: { formatter: `${range.min}`, position: 'insideStartTop', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
-      { yAxis: range.max, name: '上限', label: { formatter: `${range.max}`, position: 'end', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
+      { yAxis: range.min, name: '下限', label: { formatter: `${Number(range.min).toFixed(2)}`, position: 'insideStartTop', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
+      { yAxis: range.max, name: '上限', label: { formatter: `${Number(range.max).toFixed(2)}`, position: 'end', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
     ]
   } : undefined
   return {
@@ -586,7 +586,7 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
           const status = v >= range.min && v <= range.max
             ? '<span style="color:#22c55e">● 合格</span>'
             : '<span style="color:#ef4444">● 不合格</span>'
-          html += `<br/>范围 [${range.min}, ${range.max}] ${status}`
+          html += `<br/>范围 [${Number(range.min).toFixed(2)}, ${Number(range.max).toFixed(2)}] ${status}`
         }
         return html
       }
@@ -609,7 +609,7 @@ const buildChartOption = (title, rolls, key, unit, type = 'line') => {
       return {
         type: 'value',
         min: lo - pad, max: hi + pad,
-        axisLabel: { color: '#6b7280', fontSize: 10 },
+        axisLabel: { color: '#6b7280', fontSize: 10, formatter: v => Number(v).toFixed(2) },
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       }
     })(),

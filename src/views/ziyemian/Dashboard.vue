@@ -517,8 +517,8 @@ function renderBatchCharts() {
       symbol: 'none',
       lineStyle: { type: 'dashed', width: 1.5 },
       data: [
-        { yAxis: range.min, name: '下限', label: { formatter: `${range.min}`, position: 'insideStartTop', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
-        { yAxis: range.max, name: '上限', label: { formatter: `${range.max}`, position: 'end', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
+        { yAxis: range.min, name: '下限', label: { formatter: `${Number(range.min).toFixed(2)}`, position: 'insideStartTop', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } },
+        { yAxis: range.max, name: '上限', label: { formatter: `${Number(range.max).toFixed(2)}`, position: 'end', fontSize: 10, color: '#f59e0b' }, lineStyle: { color: '#f59e0b' } }
       ]
     }
 
@@ -534,7 +534,7 @@ function renderBatchCharts() {
           const status = v >= range.min && v <= range.max
             ? '<span style="color:#22c55e">● 合格</span>'
             : '<span style="color:#ef4444">● 不合格</span>'
-          html += `<br/>范围 [${range.min}, ${range.max}] ${status}`
+          html += `<br/>范围 [${Number(range.min).toFixed(2)}, ${Number(range.max).toFixed(2)}] ${status}`
           return html
         }
       },
@@ -550,7 +550,7 @@ function renderBatchCharts() {
         type: 'value',
         min: Math.min(...[...values, range.min, range.max]) - ((Math.max(...[...values, range.min, range.max]) - Math.min(...[...values, range.min, range.max])) * 0.08 || 1),
         max: Math.max(...[...values, range.min, range.max]) + ((Math.max(...[...values, range.min, range.max]) - Math.min(...[...values, range.min, range.max])) * 0.08 || 1),
-        axisLabel: { color: '#6b7280', fontSize: 10 },
+        axisLabel: { color: '#6b7280', fontSize: 10, formatter: v => Number(v).toFixed(2) },
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       }
     }
