@@ -12,7 +12,7 @@
               style="width: 70%; height: 70%; object-fit: contain;"
             >
           </div>
-          <span class="brand-name">金属线材综合抽检平台</span>
+          <span class="brand-name">金属线材应用检测平台</span>
         </div>
 
         <!-- 中间导航菜单（桌面端） -->

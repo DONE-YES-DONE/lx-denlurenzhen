@@ -83,9 +83,9 @@ export default {
     return axiosResponse.data
   },
 
-  // 发送登录验证码（同注册，POST /api/user/email?email=xxx）
+  // 发送登录验证码（GET /api/user/email-login?email=xxx）
   async sendLoginCode(email) {
-    const axiosResponse = await auth.post('/email', null, {
+    const axiosResponse = await auth.get('/email-login', {
       params: { email }
     })
     return axiosResponse.data
